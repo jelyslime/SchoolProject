@@ -23,6 +23,6 @@ import javax.persistence.Table;
 @Table(name = "director")
 public class Director extends Person {
 
-    @OneToOne
+    @OneToOne(mappedBy = "director")
     private School school;
 }

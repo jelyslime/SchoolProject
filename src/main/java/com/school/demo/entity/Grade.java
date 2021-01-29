@@ -23,9 +23,6 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @Table(name = "grade")
 public class Grade extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
 
     @ManyToOne
     @JoinColumn(name = "student_id")

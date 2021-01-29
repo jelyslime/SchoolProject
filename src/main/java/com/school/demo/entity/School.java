@@ -1,6 +1,7 @@
 package com.school.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,11 +17,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "school")
-public class School {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class School extends BaseEntity {
 
     @NotBlank
     @Size(min = 5, max = 20, message="Min 5, Max 20")
@@ -29,7 +26,8 @@ public class School {
     @NotBlank
     private String address;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "director_id", referencedColumnName = "id")
     private Director director;
 
     @OneToMany(mappedBy = "school")

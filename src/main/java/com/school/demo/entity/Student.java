@@ -24,9 +24,11 @@ public class Student extends Person {
     @JoinColumn(name = "school_id")
     private School school;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "students")
     Set<Course> courses;
 
+    @ManyToMany(mappedBy = "kids")
+    Set<Parent> parents;
 
     @OneToMany(mappedBy = "student")
     Set<Grade> grades;
