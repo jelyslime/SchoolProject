@@ -22,9 +22,6 @@ import java.util.Set;
 public class Course extends BaseEntity {
 
 
-    @ManyToMany
-    Set<Student> students;
-
     @OneToMany(mappedBy = "course")
     Set<Grade> grades;
 

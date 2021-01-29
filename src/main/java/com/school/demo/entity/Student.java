@@ -27,8 +27,6 @@ public class Student extends Person {
     @ManyToMany
     Set<Course> courses;
 
-    @ManyToMany
-    Set<Parent> parents;
 
     @OneToMany(mappedBy = "student")
     Set<Grade> grades;
