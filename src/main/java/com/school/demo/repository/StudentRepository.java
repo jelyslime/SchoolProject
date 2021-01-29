@@ -1,6 +1,7 @@
 package com.school.demo.repository;
 
 import com.school.demo.entity.Student;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -10,5 +11,5 @@ import org.springframework.data.repository.CrudRepository;
  *
  * @author Vladislav_Zlatanov
  */
-public interface StudentRepository extends CrudRepository<Student,Long> {
+public interface StudentRepository extends JpaRepository<Student,Long> {
 }
