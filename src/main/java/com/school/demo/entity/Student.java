@@ -1,5 +1,6 @@
 package com.school.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,14 +22,18 @@ import java.util.Set;
 public class Student extends Person {
     @ManyToOne
     @JoinColumn(name = "school_id")
+    @JsonIgnoreProperties({"director","teachers","students"})
     private School school;
 
     @ManyToMany(mappedBy = "students")
+    @JsonIgnoreProperties("student")
     private Set<Course> courses;
 
     @ManyToMany(mappedBy = "kids")
+    @JsonIgnoreProperties
     private Set<Parent> parents;
 
     @OneToMany(mappedBy = "student")
+    @JsonIgnoreProperties("student")
     private Set<Grade> grades;
 }
