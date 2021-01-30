@@ -22,7 +22,7 @@ public class Parent extends Person {
     @ManyToMany
     @JoinTable(
             name = "parents_kids",
-            joinColumns = @JoinColumn(name = "student_id"),
-            inverseJoinColumns = @JoinColumn(name = "parents_id"))
+            joinColumns = @JoinColumn(name = "parents_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id"))
     private Set<Student> kids;
 }
