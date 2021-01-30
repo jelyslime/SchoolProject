@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class SchoolView {
+    DirectorView director;
     private String name;
     private String address;
-    DirectorView director;
 }

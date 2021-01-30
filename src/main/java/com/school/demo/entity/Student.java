@@ -22,7 +22,7 @@ import java.util.Set;
 public class Student extends Person {
     @ManyToOne
     @JoinColumn(name = "school_id")
-    @JsonIgnoreProperties({"director","teachers","students"})
+    @JsonIgnoreProperties({"director", "teachers", "students"})
     private School school;
 
     @ManyToMany(mappedBy = "students")

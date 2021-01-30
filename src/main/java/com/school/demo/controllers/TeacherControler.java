@@ -18,7 +18,7 @@ public class TeacherControler {
     ModelMapper mapper;
 
     @GetMapping("/{id}")
-    public TeacherView getTeacher(@PathVariable("id") long id){
-        return mapper.map(repository.findById(id).orElse(new Teacher()),TeacherView.class);
+    public TeacherView getTeacher(@PathVariable("id") long id) {
+        return mapper.map(repository.findById(id).orElse(new Teacher()), TeacherView.class);
     }
 }

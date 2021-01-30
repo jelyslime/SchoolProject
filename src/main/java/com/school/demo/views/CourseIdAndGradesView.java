@@ -10,7 +10,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class CourseIdAndGradesView {
-    private long id;
-
     List<SimpleGradeView> grades;
+    private long id;
 }

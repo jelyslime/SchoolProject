@@ -17,13 +17,13 @@ public class StudentController {
     StudentRepository repository;
 
     @Autowired
-    private  ModelMapper mapper;
+    private ModelMapper mapper;
 
     @GetMapping("/{id}")
-    StudentView getStudent(@PathVariable("id")long id){
+    StudentView getStudent(@PathVariable("id") long id) {
         Student student = repository.findById(id).orElse(new Student());
-        StudentDTO dto = mapper.map(student,StudentDTO.class);
-        StudentView view = mapper.map(dto,StudentView.class);
+        StudentDTO dto = mapper.map(student, StudentDTO.class);
+        StudentView view = mapper.map(dto, StudentView.class);
 
         return view;
     }

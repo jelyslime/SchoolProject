@@ -1,6 +1,5 @@
 package com.school.demo.views;
 
-import com.school.demo.entity.Student;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

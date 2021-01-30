@@ -9,6 +9,8 @@ import java.util.List;
 public interface SchoolService {
 
     List<TeacherDTO> getAllTeachersInSchool(long schoolId);
+
     List<ParentDTO> getAllParentsInSchool(long schoolId);
+
     List<StudentDTO> getAllStudentsInSchool(long schoolId);
 }
