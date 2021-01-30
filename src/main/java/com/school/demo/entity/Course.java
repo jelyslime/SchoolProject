@@ -11,7 +11,6 @@ import java.util.Set;
  * Date: 1/28/2021 Time: 3:04 PM
  * <p>
  *
- *
  * @author Vladislav_Zlatanov
  */
 @NoArgsConstructor
@@ -26,10 +25,10 @@ public class Course extends BaseEntity {
             name = "courses_students",
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "course_id"))
-    Set<Student> students;
+    private Set<Student> students;
 
     @OneToMany(mappedBy = "course")
-    Set<Grade> grades;
+    private Set<Grade> grades;
 
     @ManyToOne
     @JoinColumn(name = "teachers_id")

@@ -1,14 +1,14 @@
 package com.school.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Getter
@@ -20,7 +20,7 @@ import java.util.List;
 public class School extends BaseEntity {
 
     @NotBlank
-    @Size(min = 5, max = 20, message="Min 5, Max 20")
+    @Size(min = 5, max = 20, message = "Min 5, Max 20")
     private String name;
 
     @NotBlank

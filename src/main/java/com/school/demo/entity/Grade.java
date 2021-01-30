@@ -4,7 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
@@ -13,7 +16,6 @@ import javax.validation.constraints.NotBlank;
 /**
  * Date: 1/28/2021 Time: 3:08 PM
  * <p>
- *
  *
  * @author Vladislav_Zlatanov
  */
@@ -26,13 +28,14 @@ public class Grade extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "student_id")
-    Student student;
+    private Student student;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
-    Course course;
+    private Course course;
 
     @NotBlank
-    @DecimalMax("6.0") @DecimalMin("2.0")
-    double grade;
+    @DecimalMax("6.0")
+    @DecimalMin("2.0")
+    private double grade;
 }

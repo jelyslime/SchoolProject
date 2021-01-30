@@ -13,21 +13,20 @@ import javax.validation.constraints.Size;
  * Date: 1/28/2021 Time: 2:31 PM
  * <p>
  *
- *
  * @author Vladislav_Zlatanov
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @MappedSuperclass
-public class Person extends BaseEntity{
+public class Person extends BaseEntity {
 
     @NotBlank
-    @Size(min = 5, max = 20, message="Min 5, Max 20")
+    @Size(min = 5, max = 20, message = "Min 5, Max 20")
     private String username;
     //@ValidPassword
     @NotBlank
-    @Size(min = 8, max = 20, message="Min 8, Max 20")
+    @Size(min = 8, max = 20, message = "Min 8, Max 20")
     private String password;
 
     @NotBlank

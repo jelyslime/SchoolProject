@@ -11,7 +11,6 @@ import java.util.Set;
  * Date: 1/28/2021 Time: 2:46 PM
  * <p>
  *
- *
  * @author Vladislav_Zlatanov
  */
 @NoArgsConstructor
@@ -25,11 +24,11 @@ public class Student extends Person {
     private School school;
 
     @ManyToMany(mappedBy = "students")
-    Set<Course> courses;
+    private Set<Course> courses;
 
     @ManyToMany(mappedBy = "kids")
-    Set<Parent> parents;
+    private Set<Parent> parents;
 
     @OneToMany(mappedBy = "student")
-    Set<Grade> grades;
+    private Set<Grade> grades;
 }

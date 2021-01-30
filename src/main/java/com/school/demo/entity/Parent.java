@@ -11,7 +11,6 @@ import java.util.Set;
  * Date: 1/28/2021 Time: 3:17 PM
  * <p>
  *
- *
  * @author Vladislav_Zlatanov
  */
 @NoArgsConstructor
@@ -25,5 +24,5 @@ public class Parent extends Person {
             name = "parents_kids",
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "parents_id"))
-    Set<Student> kids;
+    private Set<Student> kids;
 }
