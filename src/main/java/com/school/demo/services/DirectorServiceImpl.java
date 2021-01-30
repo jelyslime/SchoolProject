@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,26 +29,23 @@ public class DirectorServiceImpl implements DirectorService {
     public List<CourseIdAndGradesView> getAllCoursesAndAllGrades(long directorId) {
         DirectorDTO director = convertToDTO(directorRepository.findById(directorId).orElse(new Director()),DirectorDTO.class);
         List<CourseDTO> courses = new ArrayList<>();
+
         List<TeacherDTO> teacherDTOS = director.getSchool().getTeachers()
                 .stream()
                 .map(x -> convertToDTO(x,TeacherDTO.class))
                 .collect(Collectors.toList());
 
-        System.out.println(teacherDTOS.get(0).getCourses());
-        List<CourseDTO> courseDTOS =teacherDTOS
+        List<Set<Course>> setList = teacherDTOS
                 .stream()
-                .map(x -> x.getCourses())
-                .flatMap(Stream::of)
-                .map(x -> convertToDTO(x,CourseDTO.class))
-                .filter(Objects::nonNull)
+                .map(TeacherDTO::getCourses)
                 .collect(Collectors.toList());
 
-        List<CourseIdAndGradesView> view = courseDTOS
-                .stream()
-                .map(x-> mapper.map(x,CourseIdAndGradesView.class))
-                .collect(Collectors.toList());
+        List<Course> courses1 = new ArrayList<>();
+        setList.forEach(courses1::addAll);
 
-        return view;
+        return courses1.stream()
+                .map(x -> mapper.map(x,CourseIdAndGradesView.class))
+                .collect(Collectors.toList());
     }
 
     @Override
