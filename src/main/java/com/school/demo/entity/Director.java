@@ -1,5 +1,6 @@
 package com.school.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,5 +24,6 @@ import javax.persistence.Table;
 public class Director extends Person {
 
     @OneToOne(mappedBy = "director")
+    @JsonIgnoreProperties
     private School school;
 }

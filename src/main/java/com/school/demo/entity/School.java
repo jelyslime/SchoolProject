@@ -28,6 +28,7 @@ public class School extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "director_id", referencedColumnName = "id")
+    @JsonIgnoreProperties("school")
     private Director director;
 
     @OneToMany(mappedBy = "school")

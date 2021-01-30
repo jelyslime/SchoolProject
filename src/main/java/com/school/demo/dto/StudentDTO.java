@@ -1,9 +1,15 @@
 package com.school.demo.dto;
 
 import com.school.demo.entity.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class StudentDTO {
     private long id;
     private String username;
