@@ -1,8 +1,13 @@
 package com.school.demo.services;
 
+import com.school.demo.dto.CourseDTO;
+import com.school.demo.dto.GradeDTO;
+import com.school.demo.dto.StudentDTO;
 import com.school.demo.entity.Course;
+import com.school.demo.entity.Grade;
 import com.school.demo.entity.Student;
 import com.school.demo.entity.Teacher;
+import com.school.demo.repository.GradeRepository;
 import com.school.demo.repository.TeacherRepository;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
@@ -11,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.InvalidObjectException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +30,9 @@ public class TeacherServiceImpl implements TeacherService {
 
     private final ModelMapper mapper;
     private final TeacherRepository repository;
+    private final GradeRepository gradeRepository;
 
+    @Override
     public Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getAllStudentGrades(long teacherId) {
         Teacher teacher = repository.findById(teacherId).orElse(new Teacher());
 
@@ -61,10 +69,88 @@ public class TeacherServiceImpl implements TeacherService {
         return courseIdStudentGradesMap;
     }
 
-    public void addGrade(long id, long course_id, double grade, long student_id){
+    @Override
+    public void addGrade(long id, long course_id, double grade, long student_id) throws InvalidObjectException {
         Teacher teacher = repository.findById(id).orElse(new Teacher());
 
+        CourseDTO course = mapper.map(teacher.getCourses()
+                .stream()
+                .filter(x -> x.getId() == course_id)
+                .findFirst().orElse(new Course()),CourseDTO.class);
 
+        if (course.equals(new CourseDTO())){
+            throw new InvalidObjectException("This teacher does not have such course.");
+        }
+
+
+
+        StudentDTO student = mapper.map(course.getStudents().stream()
+                .filter(x -> x.getId() == student_id)
+                .findFirst().orElse(new Student()),StudentDTO.class);
+
+        if (student.equals(new StudentDTO())){
+            throw new InvalidObjectException("This course does not have such student.");
+        }
+
+        GradeDTO grade1 = new GradeDTO();
+        grade1.setCourse(mapper.map(course,Course.class));
+        grade1.setStudent(mapper.map(student,Student.class));
+        grade1.setGrade(grade);
+
+        //course.getGrades().add(mapper.map(grade1,Grade.class));
+        gradeRepository.save(mapper.map(grade1,Grade.class));
+    }
+
+    @Override
+    public void updateGrade(long id,long course_id,long grade_id, double grade) throws InvalidObjectException {
+        Teacher teacher = repository.findById(id).orElse(new Teacher());
+
+        CourseDTO course = mapper.map(teacher.getCourses()
+                .stream()
+                .filter(x -> x.getId() == course_id)
+                .findFirst().orElse(new Course()),CourseDTO.class);
+
+        if (course.equals(new CourseDTO())){
+            throw new InvalidObjectException("This teacher does not have such course.");
+        }
+
+        GradeDTO gradeDTO =  mapper.map (course.getGrades()
+                .stream()
+                .filter(x -> x.getId()== grade_id)
+                .findFirst().orElse(new Grade()),GradeDTO.class);
+
+        if (gradeDTO.equals(new GradeDTO())){
+            throw new InvalidObjectException("This course does not have such grade.");
+        }
+
+        gradeDTO.setGrade(grade);
+
+        gradeRepository.save(mapper.map(gradeDTO,Grade.class));
+    }
+
+    @Override
+    public void deleteGrade(long id,long course_id,long grade_id) throws InvalidObjectException{
+        Teacher teacher = repository.findById(id).orElse(new Teacher());
+
+        CourseDTO course = mapper.map(teacher.getCourses()
+                .stream()
+                .filter(x -> x.getId() == course_id)
+                .findFirst().orElse(new Course()),CourseDTO.class);
+
+        if (course.equals(new CourseDTO())){
+            throw new InvalidObjectException("This teacher does not have such course.");
+        }
+
+        GradeDTO gradeDTO =  mapper.map (course.getGrades()
+                .stream()
+                .filter(x -> x.getId()== grade_id)
+                .findFirst().orElse(new Grade()),GradeDTO.class);
+
+        if (gradeDTO.equals(new GradeDTO())){
+            throw new InvalidObjectException("This course does not have such grade.");
+        }
+
+        gradeRepository.delete(mapper.map(gradeDTO,Grade.class));
     }
 
 }
