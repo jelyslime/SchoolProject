@@ -111,23 +111,19 @@ public class TeacherServiceImpl implements TeacherService
     Optional<Teacher> teacher = repository.findById(id);
     if (teacher.isPresent()) {
 
-      CourseDTO course = mapper.map(teacher.get().getCourses()
+      CourseDTO course = Optional.ofNullable(mapper.map(teacher.get().getCourses()
           .stream()
           .filter(x -> x.getId() == course_id)
-          .findFirst().orElse(new Course()), CourseDTO.class);
-      // CourseDTO course = Optional.ofNullable(mapper.map(teacher.get().getCourses()
-      //          .stream()
-      //          .filter(x -> x.getId() == course_id)
-      //          .findFirst().orElse(new Course()), CourseDTO.class)).get();
+          .findFirst(), CourseDTO.class)).get();
 
-      if (course.equals(new CourseDTO())) {
+      if (course.getId() != course_id) {
         throw new InvalidObjectException("This teacher does not have such course.");
       }
 
-      GradeDTO gradeDTO = mapper.map(course.getGrades()
+      GradeDTO gradeDTO = Optional.ofNullable(mapper.map(course.getGrades()
           .stream()
           .filter(x -> x.getId() == grade_id)
-          .findFirst().orElse(new Grade()), GradeDTO.class);
+          .findFirst(), GradeDTO.class)).get();
 
       if (gradeDTO.equals(new GradeDTO())) {
         throw new InvalidObjectException("This course does not have such grade.");
