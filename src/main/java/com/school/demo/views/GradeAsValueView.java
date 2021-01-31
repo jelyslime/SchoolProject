@@ -4,12 +4,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class CourseIdAndGradesView {
-    private long id;
-    List<SimpleGradeView> grades;
+public class GradeAsValueView {
+    private double grade;
 }

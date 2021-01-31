@@ -34,8 +34,8 @@ public class Grade extends BaseEntity {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @NotBlank
-    @DecimalMax("6.0")
-    @DecimalMin("2.0")
+//    @NotBlank
+//    @DecimalMax("6.0")
+//    @DecimalMin("2.0")
     private double grade;
 }
