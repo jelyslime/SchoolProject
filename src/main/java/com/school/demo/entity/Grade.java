@@ -8,9 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotBlank;
 
 
 /**
@@ -34,7 +31,7 @@ public class Grade extends BaseEntity {
     @JoinColumn(name = "course_id")
     private Course course;
 
-//    @NotBlank
+    //    @NotBlank
 //    @DecimalMax("6.0")
 //    @DecimalMin("2.0")
     private double grade;

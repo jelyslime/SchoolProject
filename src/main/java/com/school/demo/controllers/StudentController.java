@@ -1,15 +1,9 @@
 package com.school.demo.controllers;
 
-import com.school.demo.dto.StudentDTO;
-import com.school.demo.entity.Student;
-import com.school.demo.repository.StudentRepository;
 import com.school.demo.services.StudentService;
 import com.school.demo.views.CourseIdAndGradesView;
-import com.school.demo.views.StudentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,12 +30,12 @@ public class StudentController {
 //    }
 
     @GetMapping("/{id}/getGrades")
-    public List<CourseIdAndGradesView> getGrades(@PathVariable("id") long id){
+    public List<CourseIdAndGradesView> getGrades(@PathVariable("id") long id) {
         return service.getAllGrades(id);
     }
 
     @GetMapping("/{id}/getTeachers")
-    public List<TeacherView> getTeachers(@PathVariable("id") long id){
+    public List<TeacherView> getTeachers(@PathVariable("id") long id) {
         return service.getAllTeachers(id);
     }
 }

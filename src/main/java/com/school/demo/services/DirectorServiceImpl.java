@@ -1,7 +1,6 @@
 package com.school.demo.services;
 
 import com.school.demo.dto.DirectorDTO;
-import com.school.demo.dto.ParentDTO;
 import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Course;
 import com.school.demo.entity.Director;
@@ -53,7 +52,7 @@ public class DirectorServiceImpl implements DirectorService {
     public List<TeacherView> getAllTeachers(long directorId) {
         DirectorDTO director = convertToDTO(directorRepository.findById(directorId).orElse(new Director()), DirectorDTO.class);
 
-       return director.getSchool().getTeachers()
+        return director.getSchool().getTeachers()
                 .stream()
                 .map(x -> convertToDTO(x, TeacherView.class))
                 .collect(Collectors.toList());
@@ -73,7 +72,7 @@ public class DirectorServiceImpl implements DirectorService {
 
         return parents
                 .stream()
-                .map(parent -> convertToDTO(parent,ParentDirectorView.class))
+                .map(parent -> convertToDTO(parent, ParentDirectorView.class))
                 .collect(Collectors.toList());
 
     }

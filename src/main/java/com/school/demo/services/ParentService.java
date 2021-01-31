@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ParentService {
-    Map<String,List<CourseIdAndGradesView>> getAllGrades(long parentId);
-    Map<String,List<TeacherView>> getAllTeachers(long parentId);
+    Map<String, List<CourseIdAndGradesView>> getAllGrades(long parentId);
+
+    Map<String, List<TeacherView>> getAllTeachers(long parentId);
 }

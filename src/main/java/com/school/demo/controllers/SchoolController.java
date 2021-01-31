@@ -17,17 +17,17 @@ public class SchoolController {
     private final SchoolServiceImpl service;
 
     @GetMapping("/{id}/studentsAverageGrade")
-    public Map<String, Double> avgGradeOnStudent(@PathVariable("id") long id){
+    public Map<String, Double> avgGradeOnStudent(@PathVariable("id") long id) {
         return service.avgGradeOnStudents(id);
     }
 
     @GetMapping("/{id}/studentsAverageGrade_More_Then_4.5")
-    public Map<String, Double> avgGradeOnStudentsWhoHaveMoreThenFourPointFive(@PathVariable("id") long id){
+    public Map<String, Double> avgGradeOnStudentsWhoHaveMoreThenFourPointFive(@PathVariable("id") long id) {
         return service.avgGradeOnStudentsWhoHaveMoreThenFourPointFive(id);
     }
 
     @GetMapping("/{id}/studentsAverageGrade_Less_Then_4.5")
-    public Map<String, Double> avgGradeOnStudentsWhoHaveLessThenFourPointFive(@PathVariable("id") long id){
+    public Map<String, Double> avgGradeOnStudentsWhoHaveLessThenFourPointFive(@PathVariable("id") long id) {
         return service.avgGradeOnStudentsWhoHaveLessThenFourPointFive(id);
     }
 }
