@@ -23,7 +23,7 @@ import java.util.List;
 public class StudentController {
 
 
-    StudentService service;
+    private final StudentService service;
 
 
 //    @GetMapping("/{id}")

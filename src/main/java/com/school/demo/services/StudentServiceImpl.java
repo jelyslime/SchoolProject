@@ -4,6 +4,7 @@ import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.entity.Course;
+import com.school.demo.entity.Grade;
 import com.school.demo.entity.Student;
 import com.school.demo.repository.StudentRepository;
 import com.school.demo.views.CourseIdAndGradesView;
@@ -64,6 +65,16 @@ public class StudentServiceImpl implements StudentService {
                 .map(Course::getTeacher)
                 .map(teacher -> mapper.map(teacher, TeacherView.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public double getAvgGrade(long studentId) {
+        StudentDTO student = mapper.map(repository.findById(studentId).orElse(new Student()), StudentDTO.class);
+
+        return student.getGrades()
+                .stream()
+                .mapToDouble(Grade::getGrade)
+                .average().orElse(2.0);
     }
 
 
