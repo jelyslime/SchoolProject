@@ -77,7 +77,7 @@ public class DirectorServiceImpl implements DirectorService {
 
     }
 
-    private <T, S> S convertToDTO(T toBeConverted, Class<S> type) {
+  private <T, S> S convertToDTO(T toBeConverted, Class<S> type) {
         return mapper.map(toBeConverted, type);
     }
 }
