@@ -1,8 +1,12 @@
 package com.school.demo.services;
 
+import com.school.demo.dto.SchoolDTO;
+
 import java.util.Map;
 
 public interface SchoolService {
+
+    SchoolDTO get(long schoolId);
 
 //    List<TeacherDTO> getAllTeachersInSchool(long schoolId);
 //

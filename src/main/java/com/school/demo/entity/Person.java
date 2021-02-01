@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 
@@ -21,15 +22,15 @@ import javax.validation.constraints.Size;
 @MappedSuperclass
 public class Person extends BaseEntity {
 
-    @NotBlank
+    @NotNull
     @Size(min = 5, max = 20, message = "Min 5, Max 20")
     private String username;
     //@ValidPassword
-    @NotBlank
+    @NotNull
     @Size(min = 8, max = 20, message = "Min 8, Max 20")
     private String password;
 
-    @NotBlank
+    @NotNull
     private Role role;
 
     private String firstName;
