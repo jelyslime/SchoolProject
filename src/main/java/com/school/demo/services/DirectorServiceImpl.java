@@ -7,7 +7,6 @@ import com.school.demo.models.CreateDirectorModel;
 import com.school.demo.repository.DirectorRepository;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
-import com.school.demo.views.DirectorView;
 import com.school.demo.views.ParentDirectorView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
@@ -29,7 +28,7 @@ public class DirectorServiceImpl implements DirectorService {
     private final Validator validator;
 
     @Override
-    public DirectorDTO getDirector(long directorId) {
+    public DirectorDTO get(long directorId) {
         return convertToDTO(directorRepository.findById(directorId).orElse(new Director()), DirectorDTO.class);
     }
 
@@ -82,7 +81,7 @@ public class DirectorServiceImpl implements DirectorService {
     @Override
     public boolean delete(long id) {
         boolean result = directorRepository.existsById(id);
-        if (!result){
+        if (!result) {
             return false;
         }
         directorRepository.deleteById(id);
