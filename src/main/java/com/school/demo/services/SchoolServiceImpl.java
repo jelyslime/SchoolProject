@@ -1,9 +1,6 @@
 package com.school.demo.services;
 
-import com.school.demo.dto.DirectorDTO;
-import com.school.demo.dto.SchoolDTO;
-import com.school.demo.dto.StudentDTO;
-import com.school.demo.dto.TeacherDTO;
+import com.school.demo.dto.*;
 import com.school.demo.entity.Director;
 import com.school.demo.entity.School;
 import com.school.demo.entity.Student;
@@ -27,6 +24,7 @@ public class SchoolServiceImpl implements SchoolService {
     private final DirectorServiceImpl directorService;
     private final StudentServiceImpl studentService;
     private final TeacherService teacherService;
+    private final CourseServiceImpl courseService;
 
     @Override
     public SchoolDTO get(long schoolId) {
@@ -181,6 +179,57 @@ public class SchoolServiceImpl implements SchoolService {
         repository.save(mapper.map(school,School.class));
         return true;
     }
+
+    @Override
+    public boolean assignStudentToCourse(long schoolId, long courseID, long studentId) {
+        SchoolDTO school = this.get(schoolId);
+
+        List<CourseDTO> courses = school.getTeachers()
+                .stream()
+                .map(Teacher::getCourses)
+                .flatMap(Collection::stream)
+                .map(course -> mapper.map(course,CourseDTO.class))
+                .collect(Collectors.toList());
+
+
+        if(!courses.contains(courseService.get(courseID))){
+            //throw exception (course not found in this school)
+            return false;
+        }
+        StudentDTO studentDTO = studentService.get(studentId);
+        if (school.getStudents().contains(mapper.map(studentDTO,Student.class))){
+            //throw exception (student not found in this school)
+            return false;
+        }
+
+        return courseService.addStudent(courseID,studentDTO);
+    }
+
+    @Override
+    public boolean removeStudentFromCourse(long schoolId, long courseID, long studentId) {
+        SchoolDTO school = this.get(schoolId);
+
+        List<CourseDTO> courses = school.getTeachers()
+                .stream()
+                .map(Teacher::getCourses)
+                .flatMap(Collection::stream)
+                .map(course -> mapper.map(course,CourseDTO.class))
+                .collect(Collectors.toList());
+
+
+        if(!courses.contains(courseService.get(courseID))){
+            //throw exception (course not found in this school)
+            return false;
+        }
+        StudentDTO studentDTO = studentService.get(studentId);
+        if (school.getStudents().contains(mapper.map(studentDTO,Student.class))){
+            //throw exception (student not found in this school)
+            return false;
+        }
+
+        return courseService.removeStudent(courseID,studentDTO);
+    }
+
 
     @Override
     public Map<String, Double> avgGradeOnStudents(long schoolId) {
