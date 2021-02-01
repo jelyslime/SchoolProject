@@ -3,6 +3,7 @@ package com.school.demo.services;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
 import com.school.demo.dto.StudentDTO;
+import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Course;
 import com.school.demo.entity.Grade;
 import com.school.demo.entity.Student;
@@ -30,6 +31,12 @@ public class TeacherServiceImpl implements TeacherService
   private final TeacherRepository repository;
   private final GradeRepository   gradeRepository;
   private final Validator         validator;
+
+
+  @Override
+  public TeacherDTO get(long teacherId) {
+    return mapper.map(repository.findById(teacherId).orElse(null),TeacherDTO.class);
+  }
 
   @Override
   public Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getAllStudentGrades(long teacherId)

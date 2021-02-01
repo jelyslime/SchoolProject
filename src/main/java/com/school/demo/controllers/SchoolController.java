@@ -14,6 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class SchoolController {
 
+    //TODO: ADD ENDPOINTS FOR ADDITIONAL SERVICE METHODS.
     private final SchoolServiceImpl service;
 
     @GetMapping("/{id}/studentsAverageGrade")
