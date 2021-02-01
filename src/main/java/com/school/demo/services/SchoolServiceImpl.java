@@ -23,6 +23,11 @@ public class SchoolServiceImpl implements SchoolService {
 
 
     @Override
+    public SchoolDTO get(long schoolId) {
+        return mapper.map(repository.findById(schoolId).orElse(new School()),SchoolDTO.class);
+    }
+
+    @Override
     public Map<String, Double> avgGradeOnStudents(long schoolId) {
         SchoolDTO school = mapper.map(repository.findById(schoolId).orElse(new School()), SchoolDTO.class);
 
