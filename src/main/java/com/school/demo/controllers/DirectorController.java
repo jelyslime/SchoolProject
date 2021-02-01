@@ -22,26 +22,26 @@ public class DirectorController {
     private final ModelMapper mapper;
 
     @GetMapping("/{directorId}")
-    public DirectorView getDirector(@PathVariable("directorId") long id){
-        return mapper.map(service.getDirector(id),DirectorView.class);
+    public DirectorView getDirector(@PathVariable("directorId") long id) {
+        return mapper.map(service.get(id), DirectorView.class);
     }
 
     @PostMapping("/create")
-    public DirectorView createDirector(@RequestBody CreateDirectorModel model){
-        return mapper.map(service.create(model),DirectorView.class);
+    public DirectorView createDirector(@RequestBody CreateDirectorModel model) {
+        return mapper.map(service.create(model), DirectorView.class);
     }
 
     @PutMapping("/{directorId}/edit")
-    public DirectorView editDirector(@PathVariable("directorId") long id, @RequestBody CreateDirectorModel model){
-        return mapper.map(service.edit(id,model),DirectorView.class);
+    public DirectorView editDirector(@PathVariable("directorId") long id, @RequestBody CreateDirectorModel model) {
+        return mapper.map(service.edit(id, model), DirectorView.class);
     }
 
     @DeleteMapping("/{directorId}/delete")
-    public ResponseEntity<Void> deleteDirector(@PathVariable("directorId") long id){
+    public ResponseEntity<Void> deleteDirector(@PathVariable("directorId") long id) {
         boolean flag = service.delete(id);
-        if (flag){
+        if (flag) {
             return ResponseEntity.ok().build();
-        }else {
+        } else {
             return ResponseEntity.badRequest().build();
         }
     }

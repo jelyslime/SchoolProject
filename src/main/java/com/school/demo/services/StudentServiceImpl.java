@@ -27,6 +27,11 @@ public class StudentServiceImpl implements StudentService {
     private final ModelMapper mapper;
 
     @Override
+    public StudentDTO get(long studentId) {
+        return mapper.map(repository.findById(studentId).orElse(null), StudentDTO.class);
+    }
+
+    @Override
     public List<CourseIdAndGradesView> getAllGrades(long studentId) {
         StudentDTO student = mapper.map(repository.findById(studentId).orElse(new Student()), StudentDTO.class);
 
