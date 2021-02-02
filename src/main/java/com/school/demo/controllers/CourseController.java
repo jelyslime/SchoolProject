@@ -16,17 +16,20 @@ public class CourseController {
     private final ModelMapper mapper;
     CourseServiceImpl service;
 
+    //works
     @GetMapping("/{courseId}")
     public CourseView getCourse(@PathVariable("courseId") long id) {
         return mapper.map(service.get(id), CourseView.class);
     }
 
+    //works
     @PostMapping("/create")
     public ResponseEntity<Void> createCourse(@RequestBody CreateCourseModel model) {
         service.create(model);
         return ResponseEntity.ok().build();
     }
 
+    //work
     @DeleteMapping("/{courseId}/delete")
     public ResponseEntity<Void> deleteCourse(@PathVariable("courseId") long id) {
         boolean flag = service.delete(id);

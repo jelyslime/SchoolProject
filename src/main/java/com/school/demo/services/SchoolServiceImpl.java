@@ -126,9 +126,11 @@ public class SchoolServiceImpl implements SchoolService {
 
 
         TeacherDTO teacherDTO = teacherService.get(teacherId);
+        teacherDTO.setSchool(mapper.map(school,School.class));
 
         school.getTeachers().add(mapper.map(teacherDTO, Teacher.class));
-        repository.save(mapper.map(school, School.class));
+        System.out.println("teeeeeeeeeeeeeeeeeach" + school.getTeachers().contains(mapper.map(teacherDTO, Teacher.class)));
+        repository.saveAndFlush(mapper.map(school, School.class));
         return true;
     }
 

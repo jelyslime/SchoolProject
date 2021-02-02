@@ -47,6 +47,7 @@ public class ParentController {
         }
     }
 
+    //does not work
     @PutMapping("/{parentId}/add/kid/{StudentId}")
     public ResponseEntity<Void> addChild(@PathVariable("parentId") long parentId, @PathVariable("StudentId") long studentId) {
 
@@ -58,6 +59,7 @@ public class ParentController {
         }
     }
 
+    //does not work
     @PutMapping("/{parentId}/remove/kid/{StudentId}")
     public ResponseEntity<Void> removeChild(@PathVariable("parentId") long parentId, @PathVariable("StudentId") long studentId) {
 
@@ -69,11 +71,13 @@ public class ParentController {
         }
     }
 
+    //work
     @GetMapping("/{id}/get/kids/grades")
     Map<String, List<CourseIdAndGradesView>> getGrades(@PathVariable("id") long id) {
         return service.getAllGrades(id);
     }
 
+    //work
     @GetMapping("/{id}/get/kids/teachers")
     Map<String, List<TeacherView>> getTeachers(@PathVariable("id") long id) {
         return service.getAllTeachers(id);
