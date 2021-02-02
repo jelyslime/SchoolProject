@@ -6,6 +6,7 @@ import com.school.demo.dto.StudentDTO;
 import com.school.demo.entity.Course;
 import com.school.demo.entity.Grade;
 import com.school.demo.entity.Student;
+import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.repository.StudentRepository;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.SimpleGradeView;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,7 +35,10 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<CourseIdAndGradesView> getAllGrades(long studentId) {
-        StudentDTO student = mapper.map(repository.findById(studentId).orElse(new Student()), StudentDTO.class);
+        StudentDTO student = this.get(studentId);
+        if (Objects.isNull(student)){
+            throw new NoSuchDataException(String.format("Student %s does not exists in records.",studentId));
+        }
 
         Set<GradeDTO> grades = student.getGrades()
                 .stream()
@@ -63,7 +68,10 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<TeacherView> getAllTeachers(long studentId) {
-        StudentDTO student = mapper.map(repository.findById(studentId).orElse(new Student()), StudentDTO.class);
+        StudentDTO student = this.get(studentId);
+        if (Objects.isNull(student)){
+            throw new NoSuchDataException(String.format("Student %s does not exists in records.",studentId));
+        }
 
         return student.getCourses()
                 .stream()
@@ -74,7 +82,10 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public double getAvgGrade(long studentId) {
-        StudentDTO student = mapper.map(repository.findById(studentId).orElse(new Student()), StudentDTO.class);
+        StudentDTO student = this.get(studentId);
+        if (Objects.isNull(student)){
+            throw new NoSuchDataException(String.format("Student %s does not exists in records.",studentId));
+        }
 
         return student.getGrades()
                 .stream()
