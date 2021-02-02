@@ -5,8 +5,13 @@ import com.school.demo.dto.GradeDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.entity.Course;
 import com.school.demo.entity.Grade;
+import com.school.demo.entity.Role;
+import com.school.demo.entity.School;
+import com.school.demo.entity.Student;
 import com.school.demo.exception.NoSuchDataException;
+import com.school.demo.models.CreatePerson;
 import com.school.demo.repository.StudentRepository;
+import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.SimpleGradeView;
 import com.school.demo.views.TeacherView;
@@ -15,6 +20,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -26,6 +32,7 @@ public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository repository;
     private final ModelMapper mapper;
+    private final Validator validator;
 
     @Override
     public StudentDTO get(long studentId) {
@@ -33,6 +40,62 @@ public class StudentServiceImpl implements StudentService {
                         .orElseThrow(() -> new NoSuchDataException(String.format("Student %s does not exists in records.", studentId)))
                 , StudentDTO.class);
     }
+
+    @Override
+    public StudentDTO create(CreatePerson model) {
+        Role role = Role.STUDENT;
+        validator.validateRole(role);
+        validator.validateUsername(model.getUsername());
+        validator.validatePassword(model.getPassword());
+
+        StudentDTO studentDTO = new StudentDTO();
+
+        studentDTO.setCourses(new HashSet<>());
+        studentDTO.setGrades(new HashSet<>());
+        studentDTO.setSchool(new School());
+        studentDTO.setParents(new HashSet<>());
+
+        studentDTO.setFirstName(model.getFirstName());
+        studentDTO.setLastName(model.getLastName());
+        studentDTO.setUsername(model.getUsername());
+        studentDTO.setPassword(model.getPassword());
+
+        Student entity = mapper.map(studentDTO,Student.class);
+        return mapper.map(repository.save(entity),StudentDTO.class);
+
+    }
+
+    @Override
+    public StudentDTO edit(long id, CreatePerson model) {
+        Role role = Role.STUDENT;
+        validator.validateRole(role);
+        validator.validateUsername(model.getUsername());
+        validator.validatePassword(model.getPassword());
+
+        StudentDTO studentDTO = new StudentDTO();
+
+        studentDTO.setFirstName(model.getFirstName());
+        studentDTO.setLastName(model.getLastName());
+        studentDTO.setUsername(model.getUsername());
+        studentDTO.setPassword(model.getPassword());
+        studentDTO.setId(id);
+
+        Student entity = mapper.map(studentDTO,Student.class);
+        return mapper.map(repository.save(entity),StudentDTO.class);
+
+    }
+
+    @Override
+    public boolean delete(long id) {
+        boolean result = repository.existsById(id);
+        if (!result) {
+            return false;
+        }
+        repository.deleteById(id);
+        result = repository.existsById(id);
+        return !result;
+    }
+
 
     @Override
     public List<CourseIdAndGradesView> getAllGrades(long studentId) {

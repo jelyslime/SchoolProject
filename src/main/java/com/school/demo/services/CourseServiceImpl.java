@@ -7,6 +7,7 @@ import com.school.demo.entity.Course;
 import com.school.demo.entity.Student;
 import com.school.demo.entity.Teacher;
 import com.school.demo.exception.NoSuchDataException;
+import com.school.demo.models.CreateCourseModel;
 import com.school.demo.repository.CourseRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -21,6 +22,7 @@ public class CourseServiceImpl implements CourseService {
 
     private final ModelMapper mapper;
     private final CourseRepository courseRepository;
+    private final  TeacherServiceImpl service;
 
     @Override
     public CourseDTO get(long curseId) {
@@ -28,6 +30,20 @@ public class CourseServiceImpl implements CourseService {
                         .orElseThrow(() -> new NoSuchDataException(String.format("Curse %s does not exists in records.", curseId)))
                 , CourseDTO.class);
     }
+
+    @Override
+    public CourseDTO create(CreateCourseModel model) {
+        CourseDTO course = new CourseDTO();
+        course.setGrades(new HashSet<>());
+        course.setStudents(new HashSet<>());
+        course.setTeacher(mapper.map(service.get(model.getTeacherId()),Teacher.class));
+
+        Course entity = mapper.map(course,Course.class);
+        entity = courseRepository.save(entity);
+
+        return mapper.map(entity,CourseDTO.class);
+    }
+
 
     @Override
     public boolean create() {

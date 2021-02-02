@@ -1,7 +1,9 @@
 package com.school.demo.services;
 
+import com.school.demo.controllers.SchoolController;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
+import com.school.demo.dto.SchoolDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Course;
@@ -18,7 +20,6 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.io.InvalidObjectException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,8 @@ public class TeacherServiceImpl implements TeacherService {
                         .orElseThrow(() -> new NoSuchDataException(String.format("Teacher %s does not exists in records.", teacherId)))
                 , TeacherDTO.class);
     }
+
+
 
     @Override
     public Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getAllStudentGrades(long teacherId) {
@@ -78,8 +81,10 @@ public class TeacherServiceImpl implements TeacherService {
         return courseIdStudentGradesMap;
     }
 
+
+
     @Override
-    public Grade addGrade(long id, long course_id, double grade, long student_id) throws InvalidObjectException {
+    public Grade addGrade(long id, long course_id, double grade, long student_id) {
         validator.validateGrade(grade);
         TeacherDTO teacher = this.get(id);
 
@@ -107,7 +112,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public Grade updateGrade(long id, long course_id, long grade_id, double grade) throws InvalidObjectException {
+    public Grade updateGrade(long id, long course_id, long grade_id, double grade) {
         validator.validateGrade(grade);
 
         TeacherDTO teacher = this.get(id);
@@ -134,7 +139,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public void deleteGrade(long id, long course_id, long grade_id) throws InvalidObjectException {
+    public void deleteGrade(long id, long course_id, long grade_id) {
         Teacher teacher = repository.findById(id).orElse(new Teacher());
 
         CourseDTO course = mapper.map(teacher.getCourses()

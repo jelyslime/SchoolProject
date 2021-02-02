@@ -124,13 +124,15 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean assignTeacher(long schoolId, long teacherId) {
         SchoolDTO school = this.get(schoolId);
 
-        TeacherDTO teacherDTO = teacherService.get(teacherId);
 
+        TeacherDTO teacherDTO = teacherService.get(teacherId);
 
         school.getTeachers().add(mapper.map(teacherDTO, Teacher.class));
         repository.save(mapper.map(school, School.class));
         return true;
     }
+
+
 
     @Override
     public boolean removeTeacher(long schoolId, long teacherId) {
@@ -141,6 +143,29 @@ public class SchoolServiceImpl implements SchoolService {
         boolean result = school.getTeachers().remove(mapper.map(teacherDTO, Teacher.class));
         repository.save(mapper.map(school, School.class));
         return result;
+    }
+
+    @Override
+    public boolean assignTeacherToCourse(long schoolId, long teacherId, long courseId) {
+        SchoolDTO school = this.get(schoolId);
+
+        List<CourseDTO> courses = school.getTeachers()
+                .stream()
+                .map(Teacher::getCourses)
+                .flatMap(Collection::stream)
+                .map(course -> mapper.map(course, CourseDTO.class))
+                .collect(Collectors.toList());
+
+
+        if (!courses.contains(courseService.get(courseId))) {
+            throw new NoSuchDataException(String.format("Course %s does not exists in school records.", courseId));
+        }
+        TeacherDTO teacherDto = teacherService.get(teacherId);
+        if (school.getStudents().contains(mapper.map(teacherDto, Student.class))) {
+            throw new NoSuchDataException(String.format("Teacher %s does not exists in school records.", teacherId));
+        }
+
+        return courseService.assignTeacher(courseId, teacherDto);
     }
 
     @Override

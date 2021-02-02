@@ -4,6 +4,7 @@ import com.school.demo.services.StudentService;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +17,9 @@ import java.util.List;
 @AllArgsConstructor
 public class StudentController {
 
-
+    //TODO IMPLEMENT CRYD
     private final StudentService service;
-
+    private final ModelMapper mapper;
 
 //    @GetMapping("/{id}")
 //    StudentView getStudent(@PathVariable("id") long id) {
@@ -29,12 +30,15 @@ public class StudentController {
 //        return view;
 //    }
 
-    @GetMapping("/{id}/getGrades")
+//    ResponseEntity<Void>
+
+
+    @GetMapping("/{id}/get/grades")
     public List<CourseIdAndGradesView> getGrades(@PathVariable("id") long id) {
         return service.getAllGrades(id);
     }
 
-    @GetMapping("/{id}/getTeachers")
+    @GetMapping("/{id}/get/teachers")
     public List<TeacherView> getTeachers(@PathVariable("id") long id) {
         return service.getAllTeachers(id);
     }

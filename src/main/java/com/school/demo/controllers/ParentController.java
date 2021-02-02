@@ -1,9 +1,8 @@
 package com.school.demo.controllers;
 
-import com.school.demo.models.CreateParentModel;
+import com.school.demo.models.CreatePerson;
 import com.school.demo.services.ParentServiceImpl;
 import com.school.demo.views.CourseIdAndGradesView;
-import com.school.demo.views.ParentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -21,22 +20,25 @@ public class ParentController {
     private final ModelMapper mapper;
 
     @GetMapping("/{parentId}")
-    public ParentView getDirector(@PathVariable("parentId") long id) {
-        return mapper.map(service.get(id), ParentView.class);
+    public ResponseEntity<Void> getParent(@PathVariable("parentId") long id) {
+        service.get(id);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/create")
-    public ParentView createDirector(@RequestBody CreateParentModel model) {
-        return mapper.map(service.create(model), ParentView.class);
+    public ResponseEntity<Void> createParent(@RequestBody CreatePerson model) {
+        service.create(model);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{parentId}/edit")
-    public ParentView editDirector(@PathVariable("parentId") long id, @RequestBody CreateParentModel model) {
-        return mapper.map(service.edit(id, model), ParentView.class);
+    public ResponseEntity<Void> editParent(@PathVariable("parentId") long id, @RequestBody CreatePerson model) {
+        service.edit(id, model);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{parentId}/delete")
-    public ResponseEntity<Void> deleteDirector(@PathVariable("parentId") long id) {
+    public ResponseEntity<Void> deleteParent(@PathVariable("parentId") long id) {
         boolean flag = service.delete(id);
         if (flag) {
             return ResponseEntity.ok().build();
@@ -45,7 +47,7 @@ public class ParentController {
         }
     }
 
-    @PutMapping("/{parentId}/addChild/{StudentId}")
+    @PutMapping("/{parentId}/add/kid/{StudentId}")
     public ResponseEntity<Void> addChild(@PathVariable("parentId") long parentId, @PathVariable("StudentId") long studentId) {
 
         boolean flag = service.addChild(parentId, studentId);
@@ -56,7 +58,7 @@ public class ParentController {
         }
     }
 
-    @PutMapping("/{parentId}/removeChild/{StudentId}")
+    @PutMapping("/{parentId}/remove/kid/{StudentId}")
     public ResponseEntity<Void> removeChild(@PathVariable("parentId") long parentId, @PathVariable("StudentId") long studentId) {
 
         boolean flag = service.removeChild(parentId, studentId);
@@ -67,12 +69,12 @@ public class ParentController {
         }
     }
 
-    @GetMapping("/{id}/getGrades")
+    @GetMapping("/{id}/get/kids/grades")
     Map<String, List<CourseIdAndGradesView>> getGrades(@PathVariable("id") long id) {
         return service.getAllGrades(id);
     }
 
-    @GetMapping("/{id}/getTeachers")
+    @GetMapping("/{id}/get/kids/teachers")
     Map<String, List<TeacherView>> getTeachers(@PathVariable("id") long id) {
         return service.getAllTeachers(id);
     }

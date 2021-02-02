@@ -7,7 +7,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CreateParentModel {
+public class CreatePerson {
     private String username;
     private String password;
     private String firstName;

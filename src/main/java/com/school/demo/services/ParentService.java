@@ -1,7 +1,7 @@
 package com.school.demo.services;
 
 import com.school.demo.dto.ParentDTO;
-import com.school.demo.models.CreateParentModel;
+import com.school.demo.models.CreatePerson;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.TeacherView;
 
@@ -12,9 +12,9 @@ public interface ParentService {
 
     ParentDTO get(long parentId);
 
-    ParentDTO create(CreateParentModel model);
+    ParentDTO create(CreatePerson model);
 
-    ParentDTO edit(long id, CreateParentModel model);
+    ParentDTO edit(long id, CreatePerson model);
 
     boolean delete(long id);
 

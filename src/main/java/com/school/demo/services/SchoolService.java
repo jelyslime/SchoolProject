@@ -25,17 +25,15 @@ public interface SchoolService {
 
     boolean assignTeacher(long schoolId, long teacherId);
 
+    boolean assignTeacherToCourse(long schoolId, long teacherId, long courseId);
+
     boolean removeTeacher(long schoolId, long teacherId);
 
     boolean assignStudentToCourse(long schoolID, long courseID, long studentId);
 
     boolean removeStudentFromCourse(long schoolID, long courseID, long studentId);
 
-//    List<TeacherDTO> getAllTeachersInSchool(long schoolId);
-//
-//    List<ParentDTO> getAllParentsInSchool(long schoolId);
-//
-//    List<StudentDTO> getAllStudentsInSchool(long schoolId);
+
 
     Map<String, Double> avgGradeOnStudents(long schoolId);
 

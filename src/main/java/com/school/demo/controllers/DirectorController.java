@@ -27,13 +27,15 @@ public class DirectorController {
     }
 
     @PostMapping("/create")
-    public DirectorView createDirector(@RequestBody CreateDirectorModel model) {
-        return mapper.map(service.create(model), DirectorView.class);
+    public ResponseEntity<Void> createDirector(@RequestBody CreateDirectorModel model) {
+        service.create(model);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{directorId}/edit")
-    public DirectorView editDirector(@PathVariable("directorId") long id, @RequestBody CreateDirectorModel model) {
-        return mapper.map(service.edit(id, model), DirectorView.class);
+    public ResponseEntity<Void> editDirector(@PathVariable("directorId") long id, @RequestBody CreateDirectorModel model) {
+        service.edit(id, model);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{directorId}/delete")
@@ -46,17 +48,17 @@ public class DirectorController {
         }
     }
 
-    @GetMapping("/{directorId}/getAllGradesOnSubjects")
+    @GetMapping("/{directorId}/get/all/grades")
     public List<CourseIdAndGradesView> getAllGradesOnSubjects(@PathVariable("directorId") long id) {
         return service.getAllCoursesAndAllGrades(id);
     }
 
-    @GetMapping("/{directorId}/getAllTeachers")
+    @GetMapping("/{directorId}/get/all/teachers")
     public List<TeacherView> getAllTeachers(@PathVariable("directorId") long id) {
         return service.getAllTeachers(id);
     }
 
-    @GetMapping("/{directorId}/getAllParents")
+    @GetMapping("/{directorId}/get/all/parents")
     public List<ParentDirectorView> getAllParents(@PathVariable("directorId") long id) {
         return service.getAllParents(id);
     }
