@@ -47,7 +47,7 @@ public class ParentController {
         }
     }
 
-    //does not work
+    //work
     @PutMapping("/{parentId}/add/kid/{StudentId}")
     public ResponseEntity<Void> addChild(@PathVariable("parentId") long parentId, @PathVariable("StudentId") long studentId) {
 
@@ -59,7 +59,7 @@ public class ParentController {
         }
     }
 
-    //does not work
+    //work
     @PutMapping("/{parentId}/remove/kid/{StudentId}")
     public ResponseEntity<Void> removeChild(@PathVariable("parentId") long parentId, @PathVariable("StudentId") long studentId) {
 
