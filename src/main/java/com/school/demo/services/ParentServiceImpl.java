@@ -5,6 +5,7 @@ import com.school.demo.dto.StudentDTO;
 import com.school.demo.entity.Parent;
 import com.school.demo.entity.Role;
 import com.school.demo.entity.Student;
+import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreateParentModel;
 import com.school.demo.repository.ParentRepository;
 import com.school.demo.validator.Validator;
@@ -86,8 +87,12 @@ public class ParentServiceImpl implements ParentService {
     public boolean addChild(long parentId, long StudentId) {
         ParentDTO parent = this.get(parentId);
         StudentDTO student = service.get(StudentId);
-        if (Objects.isNull(parent) || Objects.isNull(student)) {
-            return false;
+        if (Objects.isNull(parent)) {
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",parentId));
+        }
+
+        if (Objects.isNull(student)){
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",StudentId));
         }
 
         parent.getKids().add(mapper.map(student, Student.class));
@@ -100,8 +105,12 @@ public class ParentServiceImpl implements ParentService {
     public boolean removeChild(long parentId, long StudentId) {
         ParentDTO parent = this.get(parentId);
         StudentDTO student = service.get(StudentId);
-        if (Objects.isNull(parent) || Objects.isNull(student)) {
-            return false;
+        if (Objects.isNull(parent)) {
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",parentId));
+        }
+
+        if (Objects.isNull(student)){
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",StudentId));
         }
 
         parent.getKids().remove(mapper.map(student, Student.class));
@@ -111,7 +120,11 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     public Map<String, List<CourseIdAndGradesView>> getAllGrades(long parentId) {
-        ParentDTO parentDTO = mapper.map(repository.findById(parentId).orElse(new Parent()), ParentDTO.class);
+        ParentDTO parentDTO = this.get(parentId);
+
+        if (Objects.isNull(parentDTO)) {
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",parentId));
+        }
 
         List<StudentDTO> kids = parentDTO.getKids()
                 .stream()
@@ -129,8 +142,11 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     public Map<String, List<TeacherView>> getAllTeachers(long parentId) {
-        ParentDTO parentDTO = mapper.map(repository.findById(parentId).orElse(new Parent()), ParentDTO.class);
+        ParentDTO parentDTO = this.get(parentId);
 
+        if (Objects.isNull(parentDTO)) {
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",parentId));
+        }
         List<StudentDTO> kids = parentDTO.getKids()
                 .stream()
                 .map(student -> mapper.map(student, StudentDTO.class))

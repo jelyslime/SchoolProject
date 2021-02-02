@@ -3,6 +3,7 @@ package com.school.demo.services;
 import com.school.demo.dto.DirectorDTO;
 import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.*;
+import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreateDirectorModel;
 import com.school.demo.repository.DirectorRepository;
 import com.school.demo.validator.Validator;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,7 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public DirectorDTO get(long directorId) {
-        return convertToDTO(directorRepository.findById(directorId).orElse(new Director()), DirectorDTO.class);
+        return convertToDTO(directorRepository.findById(directorId).orElse(null), DirectorDTO.class);
     }
 
     @Override
@@ -46,11 +48,11 @@ public class DirectorServiceImpl implements DirectorService {
         director.setPassword(model.getPassword());
         director.setUsername(model.getUsername());
         director.setRole(role);
-        if (model.getSchool_id() != 0){
-            director.setSchool(mapper.map(schoolService.get(model.getSchool_id()),School.class));
+        if (model.getSchool_id() != 0) {
+            director.setSchool(mapper.map(schoolService.get(model.getSchool_id()), School.class));
         }
 
-        directorRepository.save(mapper.map(director,Director.class));
+        directorRepository.save(mapper.map(director, Director.class));
         return director;
     }
 
@@ -69,12 +71,12 @@ public class DirectorServiceImpl implements DirectorService {
         director.setPassword(model.getPassword());
         director.setUsername(model.getUsername());
         director.setRole(role);
-        if (model.getSchool_id() != 0){
-            director.setSchool(mapper.map(schoolService.get(model.getSchool_id()),School.class));
+        if (model.getSchool_id() != 0) {
+            director.setSchool(mapper.map(schoolService.get(model.getSchool_id()), School.class));
         }
         director.setId(id);
 
-        directorRepository.save(mapper.map(director,Director.class));
+        directorRepository.save(mapper.map(director, Director.class));
         return director;
     }
 
@@ -91,7 +93,12 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public List<CourseIdAndGradesView> getAllCoursesAndAllGrades(long directorId) {
-        DirectorDTO director = convertToDTO(directorRepository.findById(directorId).orElse(new Director()), DirectorDTO.class);
+        DirectorDTO director = this.get(directorId);
+
+        if (Objects.isNull(director)) {
+            throw new NoSuchDataException(String.format("Director %s does not exists in records.", directorId));
+        }
+
 
         List<TeacherDTO> teacherDTOS = director.getSchool().getTeachers()
                 .stream()
@@ -113,8 +120,11 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public List<TeacherView> getAllTeachers(long directorId) {
-        DirectorDTO director = convertToDTO(directorRepository.findById(directorId).orElse(new Director()), DirectorDTO.class);
+        DirectorDTO director = this.get(directorId);
 
+        if (Objects.isNull(director)) {
+            throw new NoSuchDataException(String.format("Director %s does not exists in records.", directorId));
+        }
         return director.getSchool().getTeachers()
                 .stream()
                 .map(x -> convertToDTO(x, TeacherView.class))
@@ -123,8 +133,11 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public List<ParentDirectorView> getAllParents(long directorId) {
-        DirectorDTO director = convertToDTO(directorRepository.findById(directorId).orElse(new Director()), DirectorDTO.class);
+        DirectorDTO director = this.get(directorId);
 
+        if (Objects.isNull(director)) {
+            throw new NoSuchDataException(String.format("Director %s does not exists in records.", directorId));
+        }
         List<Set<Parent>> setOfParents = director.getSchool().getStudents()
                 .stream()
                 .map(Student::getParents)
@@ -140,7 +153,7 @@ public class DirectorServiceImpl implements DirectorService {
 
     }
 
-  private <T, S> S convertToDTO(T toBeConverted, Class<S> type) {
+    private <T, S> S convertToDTO(T toBeConverted, Class<S> type) {
         return mapper.map(toBeConverted, type);
     }
 }

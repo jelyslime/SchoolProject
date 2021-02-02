@@ -6,6 +6,7 @@ import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Course;
 import com.school.demo.entity.Student;
 import com.school.demo.entity.Teacher;
+import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.repository.CourseRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -54,7 +55,7 @@ public class CourseServiceImpl implements CourseService {
         CourseDTO courseDTO = this.get(courseId);
 
         if (Objects.isNull(courseDTO)){
-            return false;
+            throw new NoSuchDataException(String.format("Course %s does not exists in records.", courseId));
         }
 
         courseDTO.setTeacher(mapper.map(teacher,Teacher.class));
@@ -69,7 +70,7 @@ public class CourseServiceImpl implements CourseService {
         CourseDTO courseDTO = this.get(courseId);
 
         if (Objects.isNull(courseDTO)){
-            return false;
+            throw new NoSuchDataException(String.format("Course %s does not exists in records.", courseId));
         }
 
         courseDTO.getStudents().add((mapper.map(student, Student.class)));
@@ -84,7 +85,7 @@ public class CourseServiceImpl implements CourseService {
         CourseDTO courseDTO = this.get(courseId);
 
         if (Objects.isNull(courseDTO)){
-            return false;
+            throw new NoSuchDataException(String.format("Course %s does not exists in records.", courseId));
         }
 
         courseDTO.getStudents().remove((mapper.map(student, Student.class)));
