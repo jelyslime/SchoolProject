@@ -31,7 +31,9 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public DirectorDTO get(long directorId) {
-        return convertToDTO(directorRepository.findById(directorId).orElse(null), DirectorDTO.class);
+        return convertToDTO(directorRepository.findById(directorId)
+                .orElseThrow(() -> new NoSuchDataException(String.format("Director %s does not exists in records.", directorId)))
+                , DirectorDTO.class);
     }
 
     @Override
@@ -95,11 +97,6 @@ public class DirectorServiceImpl implements DirectorService {
     public List<CourseIdAndGradesView> getAllCoursesAndAllGrades(long directorId) {
         DirectorDTO director = this.get(directorId);
 
-        if (Objects.isNull(director)) {
-            throw new NoSuchDataException(String.format("Director %s does not exists in records.", directorId));
-        }
-
-
         List<TeacherDTO> teacherDTOS = director.getSchool().getTeachers()
                 .stream()
                 .map(x -> convertToDTO(x, TeacherDTO.class))
@@ -122,9 +119,6 @@ public class DirectorServiceImpl implements DirectorService {
     public List<TeacherView> getAllTeachers(long directorId) {
         DirectorDTO director = this.get(directorId);
 
-        if (Objects.isNull(director)) {
-            throw new NoSuchDataException(String.format("Director %s does not exists in records.", directorId));
-        }
         return director.getSchool().getTeachers()
                 .stream()
                 .map(x -> convertToDTO(x, TeacherView.class))
@@ -135,9 +129,6 @@ public class DirectorServiceImpl implements DirectorService {
     public List<ParentDirectorView> getAllParents(long directorId) {
         DirectorDTO director = this.get(directorId);
 
-        if (Objects.isNull(director)) {
-            throw new NoSuchDataException(String.format("Director %s does not exists in records.", directorId));
-        }
         List<Set<Parent>> setOfParents = director.getSchool().getStudents()
                 .stream()
                 .map(Student::getParents)

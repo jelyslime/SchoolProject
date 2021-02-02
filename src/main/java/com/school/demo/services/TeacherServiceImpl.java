@@ -19,7 +19,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.io.InvalidObjectException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,15 +38,15 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherDTO get(long teacherId) {
-        return mapper.map(repository.findById(teacherId).orElse(null), TeacherDTO.class);
+        return mapper.map(repository.findById(teacherId)
+                        .orElseThrow(() -> new NoSuchDataException(String.format("Teacher %s does not exists in records.", teacherId)))
+                , TeacherDTO.class);
     }
 
     @Override
     public Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getAllStudentGrades(long teacherId) {
-        Teacher teacher = repository.findById(teacherId).orElse(null);
-        if (Objects.isNull(teacher)) {
-            throw new NoSuchDataException(String.format("Teacher %s does not exists in records.", teacherId));
-        }
+        TeacherDTO teacher = this.get(teacherId);
+
         Set<Course> courses = teacher.getCourses();
 
         Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> courseIdStudentGradesMap = new HashMap<>();
@@ -76,69 +79,58 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public void addGrade(long id, long course_id, double grade, long student_id) throws InvalidObjectException {
+    public Grade addGrade(long id, long course_id, double grade, long student_id) throws InvalidObjectException {
         validator.validateGrade(grade);
-        Optional<Teacher> teacher = repository.findById(id);
+        TeacherDTO teacher = this.get(id);
 
-        if (teacher.isPresent()) {
-            CourseDTO course = mapper.map(teacher.get().getCourses()
-                    .stream()
-                    .filter(x -> x.getId() == course_id)
-                    .findFirst().orElse(new Course()), CourseDTO.class);
-            if (course.equals(new CourseDTO())) {
-                throw new NoSuchDataException(String.format("Teacher %s does not have course with id %s.", id, course_id));
-            }
+        CourseDTO course = mapper.map(teacher.getCourses()
+                        .stream()
+                        .filter(x -> x.getId() == course_id)
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new NoSuchDataException(String.format("Teacher %s does not have course %s.", id, course_id)))
+                , CourseDTO.class);
 
-            StudentDTO student = mapper.map(course.getStudents().stream()
-                    .filter(x -> x.getId() == student_id)
-                    .findFirst().orElse(new Student()), StudentDTO.class);
+        StudentDTO student = mapper.map(course.getStudents().stream()
+                        .filter(x -> x.getId() == student_id)
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new NoSuchDataException(String.format("Student %s not found in course %s.", student_id, course_id)))
+                , StudentDTO.class);
 
-            if (student.equals(new StudentDTO())) {
-                throw new NoSuchDataException(String.format("Course %s does not have student %s.", course_id, student_id));
-            }
+        GradeDTO grade1 = new GradeDTO();
+        grade1.setCourse(mapper.map(course, Course.class));
+        grade1.setStudent(mapper.map(student, Student.class));
+        grade1.setGrade(grade);
 
-            GradeDTO grade1 = new GradeDTO();
-            grade1.setCourse(mapper.map(course, Course.class));
-            grade1.setStudent(mapper.map(student, Student.class));
-            grade1.setGrade(grade);
-
-            //course.getGrades().add(mapper.map(grade1,Grade.class));
-            gradeRepository.save(mapper.map(grade1, Grade.class));
-        } else {
-            throw new NoSuchDataException(String.format("Teacher %s does not exists in records.", id));
-        }
+        return gradeRepository.save(mapper.map(grade1, Grade.class));
     }
 
     @Override
-    public void updateGrade(long id, long course_id, long grade_id, double grade) throws InvalidObjectException {
+    public Grade updateGrade(long id, long course_id, long grade_id, double grade) throws InvalidObjectException {
         validator.validateGrade(grade);
-        Optional<Teacher> teacher = repository.findById(id);
-        if (teacher.isPresent()) {
 
-            CourseDTO course = Optional.ofNullable(mapper.map(teacher.get().getCourses()
-                    .stream()
-                    .filter(x -> x.getId() == course_id)
-                    .findFirst(), CourseDTO.class)).get();
+        TeacherDTO teacher = this.get(id);
 
-            if (course.getId() != course_id) {
-                throw new NoSuchDataException(String.format("Teacher %s does not have course with id %s.", id, course_id));
-            }
+        CourseDTO course = mapper.map(teacher.getCourses()
+                        .stream()
+                        .filter(x -> x.getId() == course_id)
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new NoSuchDataException(String.format("Teacher %s does not have course %s.", id, course_id)))
+                , CourseDTO.class);
 
-            GradeDTO gradeDTO = Optional.ofNullable(mapper.map(course.getGrades()
-                    .stream()
-                    .filter(x -> x.getId() == grade_id)
-                    .findFirst(), GradeDTO.class)).get();
+        GradeDTO gradeDTO = mapper.map(course.getGrades()
+                        .stream()
+                        .filter(x -> x.getId() == grade_id)
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new NoSuchDataException(String.format("Course %s does not have grade with id %s.", course_id, grade_id)))
+                , GradeDTO.class);
 
-            if (gradeDTO.equals(new GradeDTO())) {
-                throw new NoSuchDataException(String.format("Course %s does not have grade with id %s.", course_id, grade_id));
-            }
+        gradeDTO.setGrade(grade);
 
-            gradeDTO.setGrade(grade);
-
-            gradeRepository.save(mapper.map(gradeDTO, Grade.class));
-        } else {
-            throw new NoSuchDataException(String.format("Teacher %s does not exists in records.", id));
-        }
+        return gradeRepository.save(mapper.map(gradeDTO, Grade.class));
     }
 
     @Override
@@ -146,22 +138,19 @@ public class TeacherServiceImpl implements TeacherService {
         Teacher teacher = repository.findById(id).orElse(new Teacher());
 
         CourseDTO course = mapper.map(teacher.getCourses()
-                .stream()
-                .filter(x -> x.getId() == course_id)
-                .findFirst().orElse(new Course()), CourseDTO.class);
-
-        if (course.equals(new CourseDTO())) {
-            throw new NoSuchDataException(String.format("Teacher %s does not have course with id %s.", id, course_id));
-        }
+                        .stream()
+                        .filter(x -> x.getId() == course_id)
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new NoSuchDataException(String.format("Teacher %s does not have course with id %s.", id, course_id)))
+                , CourseDTO.class);
 
         GradeDTO gradeDTO = mapper.map(course.getGrades()
-                .stream()
-                .filter(x -> x.getId() == grade_id)
-                .findFirst().orElse(new Grade()), GradeDTO.class);
-
-        if (gradeDTO.equals(new GradeDTO())) {
-            throw new NoSuchDataException(String.format("Course %s does not have grade with id %s.", course_id, grade_id));
-        }
+                        .stream()
+                        .filter(x -> x.getId() == grade_id)
+                        .findFirst().orElseThrow(() ->
+                                new NoSuchDataException(String.format("Course %s does not have grade with id %s.", course_id, grade_id)))
+                , GradeDTO.class);
 
         gradeRepository.delete(mapper.map(gradeDTO, Grade.class));
     }

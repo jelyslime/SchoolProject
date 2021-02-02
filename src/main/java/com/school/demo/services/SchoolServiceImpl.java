@@ -30,7 +30,9 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public SchoolDTO get(long schoolId) {
-        return mapper.map(repository.findById(schoolId).orElse(null), SchoolDTO.class);
+        return mapper.map(repository.findById(schoolId)
+                        .orElseThrow(() -> new NoSuchDataException(String.format("School %s does not exists in records.", schoolId)))
+                , SchoolDTO.class);
     }
 
     @Override
@@ -51,9 +53,6 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean edit(long id, CreateSchoolModel model) {
         SchoolDTO school = this.get(id);
 
-        if (Objects.isNull(school)) {
-            throw new NoSuchDataException(String.format("School %s does not exists in records.", id));
-        }
 
         school.setAddress(model.getAddress());
         school.setName(model.getName());
@@ -77,15 +76,9 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean assignDirector(long schoolId, long directorID) {
         SchoolDTO school = this.get(schoolId);
 
-        if (Objects.isNull(school)) {
-            throw new NoSuchDataException(String.format("School %s does not exists in records.", schoolId));
-        }
-
-        DirectorDTO director = mapper.map(directorService.findById(directorID).orElse(null), DirectorDTO.class);
-
-        if (Objects.isNull(director)) {
-            throw new NoSuchDataException(String.format("Director %s does not exists in records.", directorID));
-        }
+        DirectorDTO director = mapper.map(directorService.findById(directorID)
+                        .orElseThrow(() -> new NoSuchDataException(String.format("Director %s does not exists in records.", directorID)))
+                , DirectorDTO.class);
 
         school.setDirector(mapper.map(director, Director.class));
         repository.save(mapper.map(school, School.class));
@@ -95,10 +88,6 @@ public class SchoolServiceImpl implements SchoolService {
     @Override
     public boolean removeDirector(long schoolId) {
         SchoolDTO school = this.get(schoolId);
-
-        if (Objects.isNull(school)) {
-            throw new NoSuchDataException(String.format("School %s does not exists in records.", schoolId));
-        }
 
         school.setDirector(new Director());
 
@@ -110,15 +99,8 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean addStudent(long schoolId, long studentId) {
         SchoolDTO school = this.get(schoolId);
 
-        if (Objects.isNull(school)) {
-            throw new NoSuchDataException(String.format("School %s does not exists in records.", schoolId));
-        }
-
         StudentDTO studentDTO = studentService.get(studentId);
 
-        if (Objects.isNull(studentDTO)) {
-            throw new NoSuchDataException(String.format("Student %s does not exists in records.", studentId));
-        }
 
         school.getStudents().add(mapper.map(studentDTO, Student.class));
         repository.save(mapper.map(school, School.class));
@@ -129,15 +111,9 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean removeStudent(long schoolId, long studentId) {
         SchoolDTO school = this.get(schoolId);
 
-        if (Objects.isNull(school)) {
-            throw new NoSuchDataException(String.format("School %s does not exists in records.", schoolId));
-        }
 
         StudentDTO studentDTO = studentService.get(studentId);
 
-        if (Objects.isNull(studentDTO)) {
-            throw new NoSuchDataException(String.format("Student %s does not exists in records.", studentId));
-        }
 
         boolean result = school.getStudents().remove(mapper.map(studentDTO, Student.class));
         repository.save(mapper.map(school, School.class));
@@ -148,15 +124,8 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean assignTeacher(long schoolId, long teacherId) {
         SchoolDTO school = this.get(schoolId);
 
-        if (Objects.isNull(school)) {
-            throw new NoSuchDataException(String.format("School %s does not exists in records.", schoolId));
-        }
-
         TeacherDTO teacherDTO = teacherService.get(teacherId);
 
-        if (Objects.isNull(teacherDTO)) {
-            throw new NoSuchDataException(String.format("Teacher %s does not exists in records.", teacherId));
-        }
 
         school.getTeachers().add(mapper.map(teacherDTO, Teacher.class));
         repository.save(mapper.map(school, School.class));
@@ -167,15 +136,7 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean removeTeacher(long schoolId, long teacherId) {
         SchoolDTO school = this.get(schoolId);
 
-        if (Objects.isNull(school)) {
-            throw new NoSuchDataException(String.format("School %s does not exists in records.", schoolId));
-        }
-
         TeacherDTO teacherDTO = teacherService.get(teacherId);
-
-        if (Objects.isNull(teacherDTO)) {
-            throw new NoSuchDataException(String.format("Teacher %s does not exists in records.", teacherId));
-        }
 
         boolean result = school.getTeachers().remove(mapper.map(teacherDTO, Teacher.class));
         repository.save(mapper.map(school, School.class));
@@ -185,10 +146,6 @@ public class SchoolServiceImpl implements SchoolService {
     @Override
     public boolean assignStudentToCourse(long schoolId, long courseID, long studentId) {
         SchoolDTO school = this.get(schoolId);
-
-        if (Objects.isNull(school)) {
-            throw new NoSuchDataException(String.format("School %s does not exists in records.", schoolId));
-        }
 
         List<CourseDTO> courses = school.getTeachers()
                 .stream()
@@ -213,10 +170,6 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean removeStudentFromCourse(long schoolId, long courseID, long studentId) {
         SchoolDTO school = this.get(schoolId);
 
-        if (Objects.isNull(school)) {
-            throw new NoSuchDataException(String.format("School %s does not exists in records.", schoolId));
-        }
-
         List<CourseDTO> courses = school.getTeachers()
                 .stream()
                 .map(Teacher::getCourses)
@@ -228,6 +181,7 @@ public class SchoolServiceImpl implements SchoolService {
         if (!courses.contains(courseService.get(courseID))) {
             throw new NoSuchDataException(String.format("Course %s does not exists in school records.", courseID));
         }
+
         StudentDTO studentDTO = studentService.get(studentId);
         if (school.getStudents().contains(mapper.map(studentDTO, Student.class))) {
             throw new NoSuchDataException(String.format("Student %s does not exists in school records.", studentId));
@@ -240,10 +194,6 @@ public class SchoolServiceImpl implements SchoolService {
     @Override
     public Map<String, Double> avgGradeOnStudents(long schoolId) {
         SchoolDTO school = mapper.map(repository.findById(schoolId).orElse(new School()), SchoolDTO.class);
-
-        if (Objects.isNull(school)) {
-            throw new NoSuchDataException(String.format("School %s does not exists in records.", schoolId));
-        }
 
         List<StudentDTO> students = school.getStudents()
                 .stream()

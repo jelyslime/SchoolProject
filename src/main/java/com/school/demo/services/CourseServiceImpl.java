@@ -24,7 +24,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO get(long curseId) {
-        return mapper.map(courseRepository.findById(curseId).orElse(null), CourseDTO.class);
+        return mapper.map(courseRepository.findById(curseId)
+                        .orElseThrow(() -> new NoSuchDataException(String.format("Curse %s does not exists in records.", curseId)))
+                , CourseDTO.class);
     }
 
     @Override
@@ -54,9 +56,6 @@ public class CourseServiceImpl implements CourseService {
     public boolean assignTeacher(long courseId, TeacherDTO teacher) {
         CourseDTO courseDTO = this.get(courseId);
 
-        if (Objects.isNull(courseDTO)) {
-            throw new NoSuchDataException(String.format("Course %s does not exists in records.", courseId));
-        }
 
         courseDTO.setTeacher(mapper.map(teacher, Teacher.class));
 
@@ -69,9 +68,6 @@ public class CourseServiceImpl implements CourseService {
     public boolean addStudent(long courseId, StudentDTO student) {
         CourseDTO courseDTO = this.get(courseId);
 
-        if (Objects.isNull(courseDTO)) {
-            throw new NoSuchDataException(String.format("Course %s does not exists in records.", courseId));
-        }
 
         courseDTO.getStudents().add((mapper.map(student, Student.class)));
 
@@ -83,10 +79,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public boolean removeStudent(long courseId, StudentDTO student) {
         CourseDTO courseDTO = this.get(courseId);
-
-        if (Objects.isNull(courseDTO)) {
-            throw new NoSuchDataException(String.format("Course %s does not exists in records.", courseId));
-        }
 
         courseDTO.getStudents().remove((mapper.map(student, Student.class)));
 
