@@ -29,15 +29,14 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO get(long studentId) {
-        return mapper.map(repository.findById(studentId).orElse(null), StudentDTO.class);
+        return mapper.map(repository.findById(studentId)
+                        .orElseThrow(() -> new NoSuchDataException(String.format("Student %s does not exists in records.", studentId)))
+                , StudentDTO.class);
     }
 
     @Override
     public List<CourseIdAndGradesView> getAllGrades(long studentId) {
         StudentDTO student = this.get(studentId);
-        if (Objects.isNull(student)) {
-            throw new NoSuchDataException(String.format("Student %s does not exists in records.", studentId));
-        }
 
         Set<GradeDTO> grades = student.getGrades()
                 .stream()
@@ -68,9 +67,6 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<TeacherView> getAllTeachers(long studentId) {
         StudentDTO student = this.get(studentId);
-        if (Objects.isNull(student)) {
-            throw new NoSuchDataException(String.format("Student %s does not exists in records.", studentId));
-        }
 
         return student.getCourses()
                 .stream()
@@ -82,9 +78,6 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public double getAvgGrade(long studentId) {
         StudentDTO student = this.get(studentId);
-        if (Objects.isNull(student)) {
-            throw new NoSuchDataException(String.format("Student %s does not exists in records.", studentId));
-        }
 
         return student.getGrades()
                 .stream()
