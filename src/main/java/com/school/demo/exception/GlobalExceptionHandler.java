@@ -10,8 +10,8 @@ import java.util.Collections;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({NoSuchDataException.class,InvalidArgumentException.class})
-    public ResponseEntity<Object> exceptionHandling(CustomException exception){
-        return new ResponseEntity<>(Collections.singletonMap("error",exception.getMessage()), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({NoSuchDataException.class, InvalidArgumentException.class})
+    public ResponseEntity<Object> exceptionHandling(CustomException exception) {
+        return new ResponseEntity<>(Collections.singletonMap("error", exception.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }

@@ -88,11 +88,11 @@ public class ParentServiceImpl implements ParentService {
         ParentDTO parent = this.get(parentId);
         StudentDTO student = service.get(StudentId);
         if (Objects.isNull(parent)) {
-            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",parentId));
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.", parentId));
         }
 
-        if (Objects.isNull(student)){
-            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",StudentId));
+        if (Objects.isNull(student)) {
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.", StudentId));
         }
 
         parent.getKids().add(mapper.map(student, Student.class));
@@ -106,11 +106,11 @@ public class ParentServiceImpl implements ParentService {
         ParentDTO parent = this.get(parentId);
         StudentDTO student = service.get(StudentId);
         if (Objects.isNull(parent)) {
-            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",parentId));
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.", parentId));
         }
 
-        if (Objects.isNull(student)){
-            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",StudentId));
+        if (Objects.isNull(student)) {
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.", StudentId));
         }
 
         parent.getKids().remove(mapper.map(student, Student.class));
@@ -123,7 +123,7 @@ public class ParentServiceImpl implements ParentService {
         ParentDTO parentDTO = this.get(parentId);
 
         if (Objects.isNull(parentDTO)) {
-            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",parentId));
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.", parentId));
         }
 
         List<StudentDTO> kids = parentDTO.getKids()
@@ -145,7 +145,7 @@ public class ParentServiceImpl implements ParentService {
         ParentDTO parentDTO = this.get(parentId);
 
         if (Objects.isNull(parentDTO)) {
-            throw new NoSuchDataException(String.format("Parent %s does not exists in records.",parentId));
+            throw new NoSuchDataException(String.format("Parent %s does not exists in records.", parentId));
         }
         List<StudentDTO> kids = parentDTO.getKids()
                 .stream()

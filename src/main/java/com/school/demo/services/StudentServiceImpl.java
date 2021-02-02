@@ -5,7 +5,6 @@ import com.school.demo.dto.GradeDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.entity.Course;
 import com.school.demo.entity.Grade;
-import com.school.demo.entity.Student;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.repository.StudentRepository;
 import com.school.demo.views.CourseIdAndGradesView;
@@ -36,8 +35,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<CourseIdAndGradesView> getAllGrades(long studentId) {
         StudentDTO student = this.get(studentId);
-        if (Objects.isNull(student)){
-            throw new NoSuchDataException(String.format("Student %s does not exists in records.",studentId));
+        if (Objects.isNull(student)) {
+            throw new NoSuchDataException(String.format("Student %s does not exists in records.", studentId));
         }
 
         Set<GradeDTO> grades = student.getGrades()
@@ -69,8 +68,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<TeacherView> getAllTeachers(long studentId) {
         StudentDTO student = this.get(studentId);
-        if (Objects.isNull(student)){
-            throw new NoSuchDataException(String.format("Student %s does not exists in records.",studentId));
+        if (Objects.isNull(student)) {
+            throw new NoSuchDataException(String.format("Student %s does not exists in records.", studentId));
         }
 
         return student.getCourses()
@@ -83,8 +82,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public double getAvgGrade(long studentId) {
         StudentDTO student = this.get(studentId);
-        if (Objects.isNull(student)){
-            throw new NoSuchDataException(String.format("Student %s does not exists in records.",studentId));
+        if (Objects.isNull(student)) {
+            throw new NoSuchDataException(String.format("Student %s does not exists in records.", studentId));
         }
 
         return student.getGrades()

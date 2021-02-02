@@ -1,7 +1,5 @@
 package com.school.demo.models;
 
-import com.school.demo.entity.Role;
-import com.school.demo.entity.School;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

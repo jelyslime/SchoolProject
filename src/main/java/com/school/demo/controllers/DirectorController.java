@@ -18,8 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 public class DirectorController {
 
-    DirectorServiceImpl service;
     private final ModelMapper mapper;
+    DirectorServiceImpl service;
 
     @GetMapping("/{directorId}")
     public DirectorView getDirector(@PathVariable("directorId") long id) {
