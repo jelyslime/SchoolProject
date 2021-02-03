@@ -3,11 +3,13 @@ package com.school.demo.services;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
 import com.school.demo.dto.StudentDTO;
+import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Course;
 import com.school.demo.entity.Grade;
 import com.school.demo.entity.Role;
 import com.school.demo.entity.School;
 import com.school.demo.entity.Student;
+import com.school.demo.entity.Teacher;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreatePerson;
 import com.school.demo.repository.StudentRepository;
@@ -94,6 +96,16 @@ public class StudentServiceImpl implements StudentService {
         repository.deleteById(id);
         result = repository.existsById(id);
         return !result;
+    }
+
+    @Override
+    public boolean removeSchool(long id) {
+        StudentDTO studentDTO = this.get(id);
+
+        studentDTO.setSchool(null);
+
+        repository.saveAndFlush(mapper.map(studentDTO, Student.class));
+        return true;
     }
 
 

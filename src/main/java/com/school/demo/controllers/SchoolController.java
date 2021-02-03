@@ -94,13 +94,13 @@ public class SchoolController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/assign/teacher/{teacherId}/course/{courseId}")
-    public ResponseEntity<Void> addTeacherToCourse(@PathVariable long id,
-                                                   @PathVariable long teacherId,
-                                                   @PathVariable long courseId) {
-        service.assignTeacherToCourse(id, teacherId, courseId);
-        return ResponseEntity.ok().build();
-    }
+//    @PutMapping("/{id}/assign/teacher/{teacherId}/course/{courseId}")
+//    public ResponseEntity<Void> addTeacherToCourse(@PathVariable long id,
+//                                                   @PathVariable long teacherId,
+//                                                   @PathVariable long courseId) {
+//        service.assignTeacherToCourse(id, teacherId, courseId);
+//        return ResponseEntity.ok().build();
+//    }
 
     @PutMapping("/{id}/remove/student/{studentId}/course/{courseId}")
     public ResponseEntity<Void> removeStudentFromCourse(@PathVariable long id,

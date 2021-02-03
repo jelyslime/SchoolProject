@@ -40,5 +40,22 @@ public class CourseController {
         }
     }
 
+    @PutMapping("/{courseId}/assign/teacher/{teacherId}")
+    public ResponseEntity<Void> addTeacherToCourse(@PathVariable long courseId, @PathVariable long teacherId) {
+        service.assignTeacher(courseId, teacherId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{courseId}/assign/student/{studentID}")
+    public ResponseEntity<Void> addStudentToCourse(@PathVariable long courseId, @PathVariable long studentID) {
+        service.addStudent(courseId, studentID);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{courseId}/remove/student/{studentID}")
+    public ResponseEntity<Void> removeStudentToCourse(@PathVariable long courseId, @PathVariable long studentID) {
+        service.removeStudent(courseId, studentID);
+        return ResponseEntity.ok().build();
+    }
 
 }

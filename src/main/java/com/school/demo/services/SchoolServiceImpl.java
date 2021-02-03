@@ -1,6 +1,7 @@
 package com.school.demo.services;
 
 import com.school.demo.dto.*;
+import com.school.demo.entity.Course;
 import com.school.demo.entity.Director;
 import com.school.demo.entity.School;
 import com.school.demo.entity.Student;
@@ -106,7 +107,7 @@ public class SchoolServiceImpl implements SchoolService {
         SchoolDTO school = this.get(schoolId);
 
         StudentDTO studentDTO = studentService.get(studentId);
-
+        studentDTO.setSchool(mapper.map(school,School.class));
 
         school.getStudents().add(mapper.map(studentDTO, Student.class));
         repository.save(mapper.map(school, School.class));
@@ -119,7 +120,7 @@ public class SchoolServiceImpl implements SchoolService {
 
 
         StudentDTO studentDTO = studentService.get(studentId);
-
+        studentService.removeSchool(studentDTO.getId());
 
         boolean result = school.getStudents().remove(mapper.map(studentDTO, Student.class));
         repository.save(mapper.map(school, School.class));
@@ -136,7 +137,6 @@ public class SchoolServiceImpl implements SchoolService {
 
 
         school.getTeachers().add(mapper.map(teacherDTO, Teacher.class));
-        System.out.println("teeeeeeeeeeeeeeeeeach" + school.getTeachers().contains(mapper.map(teacherDTO, Teacher.class)));
         repository.saveAndFlush(mapper.map(school, School.class));
         return true;
     }
@@ -151,33 +151,41 @@ public class SchoolServiceImpl implements SchoolService {
         teacherService.removeSchool(teacherDTO.getId());
 
         boolean result = school.getTeachers().remove(mapper.map(teacherDTO, Teacher.class));
-        System.out.println("teeeeeeeeeeeeeeeeeach" + school.getTeachers().contains(mapper.map(teacherDTO, Teacher.class)));
         repository.saveAndFlush(mapper.map(school, School.class));
         return result;
     }
 
-    @Override
-    public boolean assignTeacherToCourse(long schoolId, long teacherId, long courseId) {
-        SchoolDTO school = this.get(schoolId);
-
-        List<CourseDTO> courses = school.getTeachers()
-                .stream()
-                .map(Teacher::getCourses)
-                .flatMap(Collection::stream)
-                .map(course -> mapper.map(course, CourseDTO.class))
-                .collect(Collectors.toList());
-
-
-        if (!courses.contains(courseService.get(courseId))) {
-            throw new NoSuchDataException(String.format("Course %s does not exists in school records.", courseId));
-        }
-        TeacherDTO teacherDto = teacherService.get(teacherId);
-        if (school.getStudents().contains(mapper.map(teacherDto, Student.class))) {
-            throw new NoSuchDataException(String.format("Teacher %s does not exists in school records.", teacherId));
-        }
-
-        return courseService.assignTeacher(courseId, teacherDto);
-    }
+//    @Override
+//    public boolean assignTeacherToCourse(long schoolId, long teacherId, long courseId) {
+//        SchoolDTO school = this.get(schoolId);
+//
+//        List<Set<Course>> setList = school.getTeachers()
+//                .stream()
+//                .map(Teacher::getCourses)
+//                .collect(Collectors.toList());
+//
+//        List<Course> PlainCourses = new ArrayList<>();
+//        setList.forEach(PlainCourses::addAll);
+//        List<CourseDTO>courses = PlainCourses
+//                .stream()
+//                .map(course -> mapper.map(course,CourseDTO.class))
+//                .collect(Collectors.toList());
+//
+////                .flatMap(Collection::stream)
+////                .map(course -> mapper.map(course, CourseDTO.class))
+////                .collect(Collectors.toList());
+//
+//
+//        if (!courses.contains(courseService.get(courseId))) {
+//            throw new NoSuchDataException(String.format("Course %s does not exists in school records.", courseId));
+//        }
+//        TeacherDTO teacherDto = teacherService.get(teacherId);
+//        if (school.getStudents().contains(mapper.map(teacherDto, Student.class))) {
+//            throw new NoSuchDataException(String.format("Teacher %s does not exists in school records.", teacherId));
+//        }
+//
+//        return courseService.assignTeacher(courseId, teacherDto);
+//    }
 
     @Override
     public boolean assignStudentToCourse(long schoolId, long courseID, long studentId) {

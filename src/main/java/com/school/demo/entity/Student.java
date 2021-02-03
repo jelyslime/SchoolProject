@@ -25,13 +25,12 @@ public class Student extends Person {
     @JsonIgnoreProperties({"director", "teachers", "students"})
     private School school;
 
-    @ManyToMany(mappedBy = "students")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "students")
     @JsonIgnoreProperties("student")
     private Set<Course> courses;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "kids")
     private Set<Parent> parents;
-
 
 
     @OneToMany(mappedBy = "student")

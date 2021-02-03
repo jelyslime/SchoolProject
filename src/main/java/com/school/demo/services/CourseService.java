@@ -18,7 +18,13 @@ public interface CourseService {
 
     boolean assignTeacher(long courseId, TeacherDTO teacher);
 
+    boolean assignTeacher(long courseId, long teacherId);
+
     boolean addStudent(long courseId, StudentDTO student);
 
+    boolean addStudent(long courseId, long studentId);
+
     boolean removeStudent(long courseId, StudentDTO student);
+
+    boolean removeStudent(long courseId, long studentId);
 }

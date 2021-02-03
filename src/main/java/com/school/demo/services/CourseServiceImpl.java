@@ -4,6 +4,7 @@ import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Course;
+import com.school.demo.entity.Parent;
 import com.school.demo.entity.Student;
 import com.school.demo.entity.Teacher;
 import com.school.demo.exception.NoSuchDataException;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -23,6 +26,7 @@ public class CourseServiceImpl implements CourseService {
     private final ModelMapper mapper;
     private final CourseRepository courseRepository;
     private final  TeacherServiceImpl service;
+    private final StudentServiceImpl studentService;
 
     @Override
     public CourseDTO get(long curseId) {
@@ -81,26 +85,53 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public boolean assignTeacher(long courseId, long teacherId) {
+        TeacherDTO teacher = service.get(teacherId);
+        CourseDTO course = this.get(courseId);
+
+        course.setTeacher(mapper.map(teacher,Teacher.class));
+
+        courseRepository.saveAndFlush(mapper.map(course,Course.class));
+        return true;
+    }
+
+    @Override
     public boolean addStudent(long courseId, StudentDTO student) {
         CourseDTO courseDTO = this.get(courseId);
 
 
         courseDTO.getStudents().add((mapper.map(student, Student.class)));
 
-        courseRepository.save(mapper.map(courseDTO, Course.class));
+        courseRepository.saveAndFlush(mapper.map(courseDTO, Course.class));
 
         return true;
     }
 
     @Override
+    public boolean addStudent(long courseId, long studentId) {
+        return this.addStudent(courseId,studentService.get(studentId));
+    }
+
+
+
+    @Override
     public boolean removeStudent(long courseId, StudentDTO student) {
         CourseDTO courseDTO = this.get(courseId);
 
-        courseDTO.getStudents().remove((mapper.map(student, Student.class)));
+        Set<Student> studentSet = courseDTO.getStudents().stream()
+                .filter(student1 -> student1.getId()!= student.getId())
+                .collect(Collectors.toSet());
 
-        courseRepository.save(mapper.map(courseDTO, Course.class));
+        courseDTO.setStudents(studentSet);
+
+        courseRepository.saveAndFlush(mapper.map(courseDTO, Course.class));
 
         return true;
+    }
+
+    @Override
+    public boolean removeStudent(long courseId, long studentId) {
+        return this.removeStudent(courseId,studentService.get(studentId));
     }
 
 

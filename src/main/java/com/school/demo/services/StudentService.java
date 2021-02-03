@@ -20,6 +20,8 @@ public interface StudentService {
 
     boolean delete(long id);
 
+    public boolean removeSchool(long id);
+
     List<CourseIdAndGradesView> getAllGrades(long studentId);
 
     List<TeacherView> getAllTeachers(long studentId);

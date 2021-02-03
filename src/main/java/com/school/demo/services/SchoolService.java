@@ -25,8 +25,6 @@ public interface SchoolService {
 
     boolean assignTeacher(long schoolId, long teacherId);
 
-    boolean assignTeacherToCourse(long schoolId, long teacherId, long courseId);
-
     boolean removeTeacher(long schoolId, long teacherId);
 
     boolean assignStudentToCourse(long schoolID, long courseID, long studentId);

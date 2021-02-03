@@ -21,6 +21,8 @@ public interface TeacherService {
 
 
     public boolean removeSchool(long id);
+
+
     Grade addGrade(long id, long course_id, double grade, long student_id);
 
     Grade updateGrade(long id, long course_id, long grade_id, double grade);
