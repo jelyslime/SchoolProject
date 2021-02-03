@@ -3,15 +3,13 @@ package com.school.demo.services;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
 import com.school.demo.dto.StudentDTO;
-import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Course;
 import com.school.demo.entity.Grade;
 import com.school.demo.entity.Role;
 import com.school.demo.entity.School;
 import com.school.demo.entity.Student;
-import com.school.demo.entity.Teacher;
 import com.school.demo.exception.NoSuchDataException;
-import com.school.demo.models.CreatePerson;
+import com.school.demo.models.CreatePersonModel;
 import com.school.demo.repository.StudentRepository;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
@@ -24,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,7 +41,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDTO create(CreatePerson model) {
+    public StudentDTO create(CreatePersonModel model) {
         Role role = Role.STUDENT;
         validator.validateRole(role);
         validator.validateUsername(model.getUsername());
@@ -68,7 +65,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDTO edit(long id, CreatePerson model) {
+    public StudentDTO edit(long id, CreatePersonModel model) {
         Role role = Role.STUDENT;
         validator.validateRole(role);
         validator.validateUsername(model.getUsername());

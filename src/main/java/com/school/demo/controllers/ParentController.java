@@ -1,6 +1,6 @@
 package com.school.demo.controllers;
 
-import com.school.demo.models.CreatePerson;
+import com.school.demo.models.CreatePersonModel;
 import com.school.demo.services.ParentServiceImpl;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.TeacherView;
@@ -26,13 +26,13 @@ public class ParentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createParent(@RequestBody CreatePerson model) {
+    public ResponseEntity<Void> createParent(@RequestBody CreatePersonModel model) {
         service.create(model);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{parentId}/edit")
-    public ResponseEntity<Void> editParent(@PathVariable("parentId") long id, @RequestBody CreatePerson model) {
+    public ResponseEntity<Void> editParent(@PathVariable("parentId") long id, @RequestBody CreatePersonModel model) {
         service.edit(id, model);
         return ResponseEntity.ok().build();
     }

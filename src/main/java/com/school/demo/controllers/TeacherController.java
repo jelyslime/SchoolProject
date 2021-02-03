@@ -1,9 +1,13 @@
 package com.school.demo.controllers;
 
+import com.school.demo.models.CreatePersonModel;
 import com.school.demo.services.TeacherServiceImpl;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
+import com.school.demo.views.StudentView;
+import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +20,38 @@ import java.util.Map;
 public class TeacherController {
 
     TeacherServiceImpl service;
+    private final ModelMapper mapper;
 
-    //TODO: IMPLEMENT CRUD
+    //work
+    @GetMapping("/{teacherId}")
+    public TeacherView getTeacher(@PathVariable("teacherId") long id) {
+        return mapper.map(service.get(id), TeacherView.class);
+    }
+
+    //work
+    @PostMapping("/create")
+    public ResponseEntity<Void> createTeacher(@RequestBody CreatePersonModel model) {
+        service.create(model);
+        return ResponseEntity.ok().build();
+    }
+
+    //work
+    @PutMapping("/{teacherId}/edit")
+    public ResponseEntity<Void> editTeacher(@PathVariable("teacherId") long id, @RequestBody CreatePersonModel model) {
+        service.edit(id, model);
+        return ResponseEntity.ok().build();
+    }
+
+    //work
+    @DeleteMapping("/{teacherId}/delete")
+    public ResponseEntity<Void> deleteTeacher(@PathVariable("teacherId") long id) {
+        boolean flag = service.delete(id);
+        if (flag) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
     @GetMapping("/{id}/get/all/students/grades")
     Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getAllStudentGradesByTeacherId(@PathVariable("id") long id) {
         return service.getAllStudentGrades(id);

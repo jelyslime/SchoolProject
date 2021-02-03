@@ -4,10 +4,9 @@ import com.school.demo.dto.ParentDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.entity.Parent;
 import com.school.demo.entity.Role;
-import com.school.demo.entity.School;
 import com.school.demo.entity.Student;
 import com.school.demo.exception.NoSuchDataException;
-import com.school.demo.models.CreatePerson;
+import com.school.demo.models.CreatePersonModel;
 import com.school.demo.repository.ParentRepository;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
@@ -35,7 +34,7 @@ public class ParentServiceImpl implements ParentService {
     }
 
     @Override
-    public ParentDTO create(CreatePerson model) {
+    public ParentDTO create(CreatePersonModel model) {
         Role role = Role.PARENT;
         validator.validateRole(role);
         validator.validateUsername(model.getUsername());
@@ -55,7 +54,7 @@ public class ParentServiceImpl implements ParentService {
     }
 
     @Override
-    public ParentDTO edit(long id, CreatePerson model) {
+    public ParentDTO edit(long id, CreatePersonModel model) {
         Role role = Role.PARENT;
         validator.validateRole(role);
         validator.validateUsername(model.getUsername());

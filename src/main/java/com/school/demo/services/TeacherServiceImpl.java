@@ -8,9 +8,12 @@ import com.school.demo.dto.StudentDTO;
 import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Course;
 import com.school.demo.entity.Grade;
+import com.school.demo.entity.Role;
+import com.school.demo.entity.School;
 import com.school.demo.entity.Student;
 import com.school.demo.entity.Teacher;
 import com.school.demo.exception.NoSuchDataException;
+import com.school.demo.models.CreatePersonModel;
 import com.school.demo.repository.GradeRepository;
 import com.school.demo.repository.TeacherRepository;
 import com.school.demo.validator.Validator;
@@ -21,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +48,57 @@ public class TeacherServiceImpl implements TeacherService {
                 , TeacherDTO.class);
     }
 
+    @Override
+    public TeacherDTO create(CreatePersonModel model) {
+        Role role = Role.TEACHER;
+        validator.validateRole(role);
+        validator.validateUsername(model.getUsername());
+        validator.validatePassword(model.getPassword());
+
+        TeacherDTO teacherDTO = new TeacherDTO();
+
+        teacherDTO.setCourses(new HashSet<>());
+        teacherDTO.setCourses(new HashSet<>());
+        teacherDTO.setSchool(null);
+
+        teacherDTO.setFirstName(model.getFirstName());
+        teacherDTO.setLastName(model.getLastName());
+        teacherDTO.setUsername(model.getUsername());
+        teacherDTO.setPassword(model.getPassword());
+
+        Teacher entity = mapper.map(teacherDTO,Teacher.class);
+        return mapper.map(repository.save(entity),TeacherDTO.class);
+    }
+
+    @Override
+    public TeacherDTO edit(long id, CreatePersonModel model) {
+        Role role = Role.TEACHER;
+        validator.validateRole(role);
+        validator.validateUsername(model.getUsername());
+        validator.validatePassword(model.getPassword());
+
+        TeacherDTO teacherDTO = new TeacherDTO();
+
+        teacherDTO.setFirstName(model.getFirstName());
+        teacherDTO.setLastName(model.getLastName());
+        teacherDTO.setUsername(model.getUsername());
+        teacherDTO.setPassword(model.getPassword());
+        teacherDTO.setId(id);
+
+        Teacher entity = mapper.map(teacherDTO,Teacher.class);
+        return mapper.map(repository.save(entity),TeacherDTO.class);
+    }
+
+    @Override
+    public boolean delete(long id) {
+        boolean result = repository.existsById(id);
+        if (!result) {
+            return false;
+        }
+        repository.deleteById(id);
+        result = repository.existsById(id);
+        return !result;
+    }
 
 
     @Override

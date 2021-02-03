@@ -1,9 +1,11 @@
 package com.school.demo.services;
 
 
+import com.school.demo.dto.StudentDTO;
 import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Grade;
 import com.school.demo.entity.Teacher;
+import com.school.demo.models.CreatePersonModel;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
 
@@ -14,6 +16,13 @@ public interface TeacherService {
 
     //TODO CREATE CRUD
     TeacherDTO get(long teacherId);
+
+    TeacherDTO create(CreatePersonModel model);
+
+    TeacherDTO edit(long id, CreatePersonModel model);
+
+    boolean delete(long id);
+
 
     Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getAllStudentGrades(long teacherId);
 
