@@ -9,6 +9,7 @@ import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreateSchoolModel;
 import com.school.demo.repository.DirectorRepository;
 import com.school.demo.repository.SchoolRepository;
+import com.school.demo.validator.Validator;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class SchoolServiceImpl implements SchoolService {
     private final StudentServiceImpl studentService;
     private final TeacherService teacherService;
     private final CourseServiceImpl courseService;
+    private final Validator validator;
 
     @Override
     public SchoolDTO get(long schoolId) {
@@ -37,10 +39,12 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public SchoolDTO create(CreateSchoolModel model) {
+        validator.validateAddress(model.getAddress());
+        validator.validateName(model.getName());
         SchoolDTO school = new SchoolDTO();
 
         school.setAddress(model.getAddress());
-        school.setDirector(new Director());
+        school.setDirector(null);
         school.setName(model.getName());
         school.setStudents(new ArrayList<>());
         school.setTeachers(new ArrayList<>());
@@ -51,8 +55,10 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean edit(long id, CreateSchoolModel model) {
-        SchoolDTO school = this.get(id);
+        validator.validateAddress(model.getAddress());
+        validator.validateName(model.getName());
 
+        SchoolDTO school = this.get(id);
 
         school.setAddress(model.getAddress());
         school.setName(model.getName());
@@ -89,7 +95,7 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean removeDirector(long schoolId) {
         SchoolDTO school = this.get(schoolId);
 
-        school.setDirector(new Director());
+        school.setDirector(null);
 
         repository.save(mapper.map(school, School.class));
         return true;
@@ -128,6 +134,7 @@ public class SchoolServiceImpl implements SchoolService {
         TeacherDTO teacherDTO = teacherService.get(teacherId);
         teacherDTO.setSchool(mapper.map(school,School.class));
 
+
         school.getTeachers().add(mapper.map(teacherDTO, Teacher.class));
         System.out.println("teeeeeeeeeeeeeeeeeach" + school.getTeachers().contains(mapper.map(teacherDTO, Teacher.class)));
         repository.saveAndFlush(mapper.map(school, School.class));
@@ -141,9 +148,11 @@ public class SchoolServiceImpl implements SchoolService {
         SchoolDTO school = this.get(schoolId);
 
         TeacherDTO teacherDTO = teacherService.get(teacherId);
+        teacherService.removeSchool(teacherDTO.getId());
 
         boolean result = school.getTeachers().remove(mapper.map(teacherDTO, Teacher.class));
-        repository.save(mapper.map(school, School.class));
+        System.out.println("teeeeeeeeeeeeeeeeeach" + school.getTeachers().contains(mapper.map(teacherDTO, Teacher.class)));
+        repository.saveAndFlush(mapper.map(school, School.class));
         return result;
     }
 

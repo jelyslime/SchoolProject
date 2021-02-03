@@ -22,6 +22,18 @@ public class Validator {
         }
     }
 
+    public void validateAddress(String username) {
+        if (Objects.isNull(username)) {
+            throw new InvalidArgumentException("address cannot be null");
+        }
+    }
+
+    public void validateName(String username) {
+        if (Objects.isNull(username)) {
+            throw new InvalidArgumentException("name cannot be null");
+        }
+    }
+
     public void validateUsername(String username) {
         if (Objects.isNull(username)) {
             throw new InvalidArgumentException("username cannot be null");

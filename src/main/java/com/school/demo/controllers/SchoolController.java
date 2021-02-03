@@ -46,24 +46,28 @@ public class SchoolController {
         }
     }
 
+    //sholud word
     @PutMapping("/{id}/assign/director/{directorId}")
     public ResponseEntity<Void> addDirector(@PathVariable long id, @PathVariable long directorId) {
         service.assignDirector(id, directorId);
         return ResponseEntity.ok().build();
     }
 
+    //prob works
     @PutMapping("/{id}/remove/director/{directorId}")
     public ResponseEntity<Void> removeDirector(@PathVariable long id, @PathVariable long directorId) {
         service.removeDirector(id);
         return ResponseEntity.ok().build();
     }
 
+    //assing should be done trhough student side
     @PutMapping("/{id}/assign/student/{studentId}")
     public ResponseEntity<Void> addStudent(@PathVariable long id, @PathVariable long studentId) {
         service.addStudent(id, studentId);
         return ResponseEntity.ok().build();
     }
 
+    //assing should be done trhough student size
     @PutMapping("/{id}/remove/student/{studentId}")
     public ResponseEntity<Void> removeStudent(@PathVariable long id, @PathVariable long studentId) {
         service.removeStudent(id, studentId);
@@ -76,7 +80,7 @@ public class SchoolController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/remove/student/{teacherId}")
+    @PutMapping("/{id}/remove/teacher/{teacherId}")
     public ResponseEntity<Void> removeTeacher(@PathVariable long id, @PathVariable long teacherId) {
         service.removeTeacher(id, teacherId);
         return ResponseEntity.ok().build();

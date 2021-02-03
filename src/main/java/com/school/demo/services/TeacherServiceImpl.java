@@ -82,6 +82,16 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
 
+@Override
+    public boolean removeSchool(long id){
+        TeacherDTO teacher = this.get(id);
+
+        teacher.setSchool(null);
+
+        repository.saveAndFlush(mapper.map(teacher,Teacher.class));
+        return true;
+    }
+
 
     @Override
     public Grade addGrade(long id, long course_id, double grade, long student_id) {

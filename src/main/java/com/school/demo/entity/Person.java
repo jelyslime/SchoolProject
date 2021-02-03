@@ -22,11 +22,11 @@ import javax.validation.constraints.Size;
 public class Person extends BaseEntity {
 
     @NotNull
-    @Size(min = 5, max = 20, message = "Min 5, Max 20")
+//    @Size(min = 5, max = 20, message = "Min 5, Max 20")
     private String username;
     //@ValidPassword
     @NotNull
-    @Size(min = 8, max = 20, message = "Min 8, Max 20")
+//    @Size(min = 8, max = 20, message = "Min 8, Max 20")
     private String password;
 
     @NotNull
