@@ -6,7 +6,7 @@ import com.school.demo.entity.Parent;
 import com.school.demo.entity.Role;
 import com.school.demo.entity.Student;
 import com.school.demo.exception.NoSuchDataException;
-import com.school.demo.models.CreateParentModel;
+import com.school.demo.models.CreatePersonModel;
 import com.school.demo.repository.ParentRepository;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
@@ -34,7 +34,7 @@ public class ParentServiceImpl implements ParentService {
     }
 
     @Override
-    public ParentDTO create(CreateParentModel model) {
+    public ParentDTO create(CreatePersonModel model) {
         Role role = Role.PARENT;
         validator.validateRole(role);
         validator.validateUsername(model.getUsername());
@@ -54,7 +54,7 @@ public class ParentServiceImpl implements ParentService {
     }
 
     @Override
-    public ParentDTO edit(long id, CreateParentModel model) {
+    public ParentDTO edit(long id, CreatePersonModel model) {
         Role role = Role.PARENT;
         validator.validateRole(role);
         validator.validateUsername(model.getUsername());
@@ -89,10 +89,16 @@ public class ParentServiceImpl implements ParentService {
     public boolean addChild(long parentId, long StudentId) {
         ParentDTO parent = this.get(parentId);
         StudentDTO student = service.get(StudentId);
-
+        System.out.println("kidsss added to blet blet " + parent.getKids().size());
         parent.getKids().add(mapper.map(student, Student.class));
+        System.out.println("kidsss added to blet blet " + parent.getKids().size());
 
-        repository.save(mapper.map(parent, Parent.class));
+        Parent ent = mapper.map(parent,Parent.class);
+        System.out.println("kidsss added to blet blet " + ent.getKids().size());
+
+        ent.getKids().add(mapper.map(student,Student.class));
+
+       repository.saveAndFlush(ent);
         return true;
     }
 

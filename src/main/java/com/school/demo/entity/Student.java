@@ -20,20 +20,23 @@ import java.util.Set;
 @Entity
 @Table(name = "student")
 public class Student extends Person {
-    @ManyToOne
+    @ManyToOne(targetEntity=School.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "school_id")
     @JsonIgnoreProperties({"director", "teachers", "students"})
     private School school;
 
-    @ManyToMany(mappedBy = "students")
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "students")
     @JsonIgnoreProperties("student")
     private Set<Course> courses;
 
-    @ManyToMany(mappedBy = "kids")
-    @JsonIgnoreProperties
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "kids")
     private Set<Parent> parents;
+
 
     @OneToMany(mappedBy = "student")
     @JsonIgnoreProperties("student")
     private Set<Grade> grades;
+
+
+
 }

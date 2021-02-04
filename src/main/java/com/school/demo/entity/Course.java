@@ -20,12 +20,12 @@ import java.util.Set;
 @Table(name = "course")
 public class Course extends BaseEntity {
 
-    @ManyToMany
-    @JoinTable(
-            name = "courses_students",
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "courses_students",
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "course_id"))
     private Set<Student> students;
+
 
     @OneToMany(mappedBy = "course")
     private Set<Grade> grades;

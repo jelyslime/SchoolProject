@@ -1,14 +1,19 @@
 package com.school.demo.services;
 
+import com.school.demo.controllers.SchoolController;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
+import com.school.demo.dto.SchoolDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Course;
 import com.school.demo.entity.Grade;
+import com.school.demo.entity.Role;
+import com.school.demo.entity.School;
 import com.school.demo.entity.Student;
 import com.school.demo.entity.Teacher;
 import com.school.demo.exception.NoSuchDataException;
+import com.school.demo.models.CreatePersonModel;
 import com.school.demo.repository.GradeRepository;
 import com.school.demo.repository.TeacherRepository;
 import com.school.demo.validator.Validator;
@@ -18,8 +23,8 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.io.InvalidObjectException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +47,59 @@ public class TeacherServiceImpl implements TeacherService {
                         .orElseThrow(() -> new NoSuchDataException(String.format("Teacher %s does not exists in records.", teacherId)))
                 , TeacherDTO.class);
     }
+
+    @Override
+    public TeacherDTO create(CreatePersonModel model) {
+        Role role = Role.TEACHER;
+        validator.validateRole(role);
+        validator.validateUsername(model.getUsername());
+        validator.validatePassword(model.getPassword());
+
+        TeacherDTO teacherDTO = new TeacherDTO();
+
+        teacherDTO.setCourses(new HashSet<>());
+        teacherDTO.setCourses(new HashSet<>());
+        teacherDTO.setSchool(null);
+
+        teacherDTO.setFirstName(model.getFirstName());
+        teacherDTO.setLastName(model.getLastName());
+        teacherDTO.setUsername(model.getUsername());
+        teacherDTO.setPassword(model.getPassword());
+
+        Teacher entity = mapper.map(teacherDTO,Teacher.class);
+        return mapper.map(repository.save(entity),TeacherDTO.class);
+    }
+
+    @Override
+    public TeacherDTO edit(long id, CreatePersonModel model) {
+        Role role = Role.TEACHER;
+        validator.validateRole(role);
+        validator.validateUsername(model.getUsername());
+        validator.validatePassword(model.getPassword());
+
+        TeacherDTO teacherDTO = new TeacherDTO();
+
+        teacherDTO.setFirstName(model.getFirstName());
+        teacherDTO.setLastName(model.getLastName());
+        teacherDTO.setUsername(model.getUsername());
+        teacherDTO.setPassword(model.getPassword());
+        teacherDTO.setId(id);
+
+        Teacher entity = mapper.map(teacherDTO,Teacher.class);
+        return mapper.map(repository.save(entity),TeacherDTO.class);
+    }
+
+    @Override
+    public boolean delete(long id) {
+        boolean result = repository.existsById(id);
+        if (!result) {
+            return false;
+        }
+        repository.deleteById(id);
+        result = repository.existsById(id);
+        return !result;
+    }
+
 
     @Override
     public Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getAllStudentGrades(long teacherId) {
@@ -78,8 +136,20 @@ public class TeacherServiceImpl implements TeacherService {
         return courseIdStudentGradesMap;
     }
 
+
+@Override
+    public boolean removeSchool(long id){
+        TeacherDTO teacher = this.get(id);
+
+        teacher.setSchool(null);
+
+        repository.saveAndFlush(mapper.map(teacher,Teacher.class));
+        return true;
+    }
+
+
     @Override
-    public Grade addGrade(long id, long course_id, double grade, long student_id) throws InvalidObjectException {
+    public Grade addGrade(long id, long course_id, double grade, long student_id) {
         validator.validateGrade(grade);
         TeacherDTO teacher = this.get(id);
 
@@ -107,7 +177,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public Grade updateGrade(long id, long course_id, long grade_id, double grade) throws InvalidObjectException {
+    public Grade updateGrade(long id, long course_id, long grade_id, double grade) {
         validator.validateGrade(grade);
 
         TeacherDTO teacher = this.get(id);
@@ -134,7 +204,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public void deleteGrade(long id, long course_id, long grade_id) throws InvalidObjectException {
+    public void deleteGrade(long id, long course_id, long grade_id) {
         Teacher teacher = repository.findById(id).orElse(new Teacher());
 
         CourseDTO course = mapper.map(teacher.getCourses()

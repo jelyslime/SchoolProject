@@ -20,7 +20,7 @@ import java.util.Set;
 @Entity
 @Table(name = "teacher")
 public class Teacher extends Person {
-    @ManyToOne
+    @ManyToOne(targetEntity=School.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "school_id")
     private School school;
 

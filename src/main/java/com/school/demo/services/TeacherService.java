@@ -1,24 +1,40 @@
 package com.school.demo.services;
 
 
+import com.school.demo.dto.StudentDTO;
 import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Grade;
+import com.school.demo.entity.Teacher;
+import com.school.demo.models.CreatePersonModel;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
 
-import java.io.InvalidObjectException;
 import java.util.List;
 import java.util.Map;
 
 public interface TeacherService {
 
+    //TODO CREATE CRUD
     TeacherDTO get(long teacherId);
+
+    TeacherDTO create(CreatePersonModel model);
+
+    TeacherDTO edit(long id, CreatePersonModel model);
+
+    boolean delete(long id);
+
 
     Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getAllStudentGrades(long teacherId);
 
-    Grade addGrade(long id, long course_id, double grade, long student_id) throws InvalidObjectException;
+//    boolean assignSchool(long teacherId,long schoolId);
 
-    Grade updateGrade(long id, long course_id, long grade_id, double grade) throws InvalidObjectException;
 
-    void deleteGrade(long id, long course_id, long grade_id) throws InvalidObjectException;
+    public boolean removeSchool(long id);
+
+
+    Grade addGrade(long id, long course_id, double grade, long student_id);
+
+    Grade updateGrade(long id, long course_id, long grade_id, double grade);
+
+    void deleteGrade(long id, long course_id, long grade_id);
 }
