@@ -16,7 +16,7 @@ public class TeacherDTO {
     private long id;
     private String username;
     private String password;
-    private Role role;
+    private String role;
     private String firstName;
     private String lastName;
     private School school;

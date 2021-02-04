@@ -8,6 +8,7 @@ import com.school.demo.entity.Student;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.repository.ParentRepository;
+import com.school.demo.roles;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.TeacherView;
@@ -35,8 +36,7 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     public ParentDTO create(CreatePersonModel model) {
-        Role role = Role.PARENT;
-        validator.validateRole(role);
+        validator.validateRole(roles.ROLE_PARENT);
         validator.validateUsername(model.getUsername());
         validator.validatePassword(model.getPassword());
 
@@ -47,7 +47,7 @@ public class ParentServiceImpl implements ParentService {
         parent.setPassword(model.getPassword());
         parent.setUsername(model.getUsername());
         parent.setKids(new HashSet<>());
-        parent.setRole(role);
+        parent.setRole(roles.ROLE_PARENT);
 
         repository.save(mapper.map(parent, Parent.class));
         return parent;
@@ -55,8 +55,7 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     public ParentDTO edit(long id, CreatePersonModel model) {
-        Role role = Role.PARENT;
-        validator.validateRole(role);
+        validator.validateRole(roles.ROLE_PARENT);
         validator.validateUsername(model.getUsername());
         validator.validatePassword(model.getPassword());
 
@@ -66,7 +65,7 @@ public class ParentServiceImpl implements ParentService {
         parent.setLastName(model.getLastName());
         parent.setPassword(model.getPassword());
         parent.setUsername(model.getUsername());
-        parent.setRole(role);
+        parent.setRole(roles.ROLE_PARENT);
 
         parent.setId(id);
 

@@ -14,7 +14,7 @@ import java.util.Objects;
 @Component
 public class Validator {
     private final ModelMapper mapper;
-    private TeacherRepository teacherRepository;
+    private final TeacherRepository teacherRepository;
 
     public void validateObjectDoesExist(Object id) throws InvalidObjectException {
         if (id == null) {
@@ -52,8 +52,8 @@ public class Validator {
         }
     }
 
-    public void validateRole(Role role) {
-        if (Objects.isNull(role)) {
+    public void validateRole(String roles) {
+        if (Objects.isNull(roles)) {
             throw new InvalidArgumentException("Role cannot be null");
         }
     }

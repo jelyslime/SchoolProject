@@ -11,6 +11,7 @@ import com.school.demo.entity.Student;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.repository.StudentRepository;
+import com.school.demo.roles;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.SimpleGradeView;
@@ -42,8 +43,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO create(CreatePersonModel model) {
-        Role role = Role.STUDENT;
-        validator.validateRole(role);
+        validator.validateRole(roles.ROLE_STUDENT);
         validator.validateUsername(model.getUsername());
         validator.validatePassword(model.getPassword());
 
@@ -53,6 +53,7 @@ public class StudentServiceImpl implements StudentService {
         studentDTO.setGrades(new HashSet<>());
         studentDTO.setSchool(new School());
         studentDTO.setParents(new HashSet<>());
+        studentDTO.setRole(roles.ROLE_STUDENT);
 
         studentDTO.setFirstName(model.getFirstName());
         studentDTO.setLastName(model.getLastName());
@@ -66,8 +67,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO edit(long id, CreatePersonModel model) {
-        Role role = Role.STUDENT;
-        validator.validateRole(role);
+        validator.validateRole(roles.ROLE_STUDENT);
         validator.validateUsername(model.getUsername());
         validator.validatePassword(model.getPassword());
 
@@ -76,6 +76,7 @@ public class StudentServiceImpl implements StudentService {
         studentDTO.setFirstName(model.getFirstName());
         studentDTO.setLastName(model.getLastName());
         studentDTO.setUsername(model.getUsername());
+        studentDTO.setRole(roles.ROLE_STUDENT);
         studentDTO.setPassword(model.getPassword());
         studentDTO.setId(id);
 

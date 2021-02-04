@@ -6,6 +6,7 @@ import com.school.demo.entity.*;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreateDirectorModel;
 import com.school.demo.repository.DirectorRepository;
+import com.school.demo.roles;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.ParentDirectorView;
@@ -38,8 +39,8 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public DirectorDTO create(CreateDirectorModel model) {
-        Role role = Role.DIRECTOR;
-        validator.validateRole(role);
+
+        validator.validateRole(roles.ROLE_DIRECTOR);
         validator.validateUsername(model.getUsername());
         validator.validatePassword(model.getPassword());
 
@@ -49,7 +50,7 @@ public class DirectorServiceImpl implements DirectorService {
         director.setLastName(model.getLastName());
         director.setPassword(model.getPassword());
         director.setUsername(model.getUsername());
-        director.setRole(role);
+        director.setRole(roles.ROLE_DIRECTOR);
         if (model.getSchool_id() != 0) {
             director.setSchool(mapper.map(schoolService.get(model.getSchool_id()), School.class));
         }
@@ -61,8 +62,7 @@ public class DirectorServiceImpl implements DirectorService {
     @Override
     public DirectorDTO edit(long id, CreateDirectorModel model) {
 
-        Role role = Role.DIRECTOR;
-        validator.validateRole(role);
+        validator.validateRole(roles.ROLE_DIRECTOR);
         validator.validateUsername(model.getUsername());
         validator.validatePassword(model.getPassword());
 
@@ -72,7 +72,7 @@ public class DirectorServiceImpl implements DirectorService {
         director.setLastName(model.getLastName());
         director.setPassword(model.getPassword());
         director.setUsername(model.getUsername());
-        director.setRole(role);
+        director.setRole(roles.ROLE_DIRECTOR);
         if (model.getSchool_id() != 0) {
             director.setSchool(mapper.map(schoolService.get(model.getSchool_id()), School.class));
         }

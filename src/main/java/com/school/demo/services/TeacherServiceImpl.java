@@ -16,6 +16,7 @@ import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.repository.GradeRepository;
 import com.school.demo.repository.TeacherRepository;
+import com.school.demo.roles;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
@@ -50,8 +51,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherDTO create(CreatePersonModel model) {
-        Role role = Role.TEACHER;
-        validator.validateRole(role);
+        validator.validateRole(roles.ROLE_TEACHER);
         validator.validateUsername(model.getUsername());
         validator.validatePassword(model.getPassword());
 
@@ -60,6 +60,7 @@ public class TeacherServiceImpl implements TeacherService {
         teacherDTO.setCourses(new HashSet<>());
         teacherDTO.setCourses(new HashSet<>());
         teacherDTO.setSchool(null);
+        teacherDTO.setRole(roles.ROLE_TEACHER);
 
         teacherDTO.setFirstName(model.getFirstName());
         teacherDTO.setLastName(model.getLastName());
@@ -72,8 +73,8 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherDTO edit(long id, CreatePersonModel model) {
-        Role role = Role.TEACHER;
-        validator.validateRole(role);
+
+        validator.validateRole(roles.ROLE_TEACHER);
         validator.validateUsername(model.getUsername());
         validator.validatePassword(model.getPassword());
 
@@ -84,6 +85,7 @@ public class TeacherServiceImpl implements TeacherService {
         teacherDTO.setUsername(model.getUsername());
         teacherDTO.setPassword(model.getPassword());
         teacherDTO.setId(id);
+        teacherDTO.setRole(roles.ROLE_TEACHER);
 
         Teacher entity = mapper.map(teacherDTO,Teacher.class);
         return mapper.map(repository.save(entity),TeacherDTO.class);

@@ -30,7 +30,7 @@ public class Person extends BaseEntity {
     private String password;
 
     @NotNull
-    private Role role;
+    private String role;
 
     private String firstName;
     private String lastName;
