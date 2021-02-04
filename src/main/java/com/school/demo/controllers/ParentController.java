@@ -3,6 +3,7 @@ package com.school.demo.controllers;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.services.ParentServiceImpl;
 import com.school.demo.views.CourseIdAndGradesView;
+import com.school.demo.views.ParentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -20,21 +21,19 @@ public class ParentController {
     private final ModelMapper mapper;
 
     @GetMapping("/{parentId}")
-    public ResponseEntity<Void> getParent(@PathVariable("parentId") long id) {
-        service.get(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ParentView> getParent(@PathVariable("parentId") long id) {
+
+        return ResponseEntity.ok().body(mapper.map(service.get(id),ParentView.class));
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createParent(@RequestBody CreatePersonModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ParentView> createParent(@RequestBody CreatePersonModel model) {
+        return ResponseEntity.ok().body(mapper.map(service.create(model),ParentView.class));
     }
 
     @PutMapping("/{parentId}/edit")
-    public ResponseEntity<Void> editParent(@PathVariable("parentId") long id, @RequestBody CreatePersonModel model) {
-        service.edit(id, model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ParentView> editParent(@PathVariable("parentId") long id, @RequestBody CreatePersonModel model) {
+        return ResponseEntity.ok().body(mapper.map(service.edit(id, model),ParentView.class));
     }
 
     @DeleteMapping("/{parentId}/delete")

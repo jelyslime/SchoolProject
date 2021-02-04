@@ -31,22 +31,22 @@ public class StudentController {
 
     //work
     @GetMapping("/{studentId}")
-    public StudentView getStudent(@PathVariable("studentId") long id) {
-        return mapper.map(service.get(id), StudentView.class);
+    public ResponseEntity<StudentView> getStudent(@PathVariable("studentId") long id) {
+        return ResponseEntity.ok().body(mapper.map(service.get(id), StudentView.class));
     }
 
     //work
     @PostMapping("/create")
-    public ResponseEntity<Void> createStudent(@RequestBody CreatePersonModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<StudentView> createStudent(@RequestBody CreatePersonModel model) {
+
+        return ResponseEntity.ok().body(mapper.map(service.create(model), StudentView.class));
     }
 
     //work
     @PutMapping("/{studentId}/edit")
-    public ResponseEntity<Void> editStudent(@PathVariable("studentId") long id, @RequestBody CreatePersonModel model) {
-        service.edit(id, model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<StudentView> editStudent(@PathVariable("studentId") long id, @RequestBody CreatePersonModel model) {
+
+        return ResponseEntity.ok().body(mapper.map(service.edit(id, model), StudentView.class));
     }
 
     //work

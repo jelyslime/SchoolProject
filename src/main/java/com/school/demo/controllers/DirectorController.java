@@ -23,22 +23,21 @@ public class DirectorController {
 
     //work
     @GetMapping("/{directorId}")
-    public DirectorView getDirector(@PathVariable("directorId") long id) {
-        return mapper.map(service.get(id), DirectorView.class);
+    public ResponseEntity<DirectorView> getDirector(@PathVariable("directorId") long id) {
+        return ResponseEntity.ok().body(mapper.map(service.get(id), DirectorView.class));
     }
 
     //work
     @PostMapping("/create")
-    public ResponseEntity<Void> createDirector(@RequestBody CreateDirectorModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<DirectorView> createDirector(@RequestBody CreateDirectorModel model) {
+
+        return ResponseEntity.ok().body(mapper.map(service.create(model), DirectorView.class));
     }
 
     //work
     @PutMapping("/{directorId}/edit")
-    public ResponseEntity<Void> editDirector(@PathVariable("directorId") long id, @RequestBody CreateDirectorModel model) {
-        service.edit(id, model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<DirectorView> editDirector(@PathVariable("directorId") long id, @RequestBody CreateDirectorModel model) {
+        return ResponseEntity.ok().body(mapper.map(service.edit(id, model), DirectorView.class));
     }
 
     //work

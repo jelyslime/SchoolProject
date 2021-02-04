@@ -24,22 +24,22 @@ public class TeacherController {
 
     //work
     @GetMapping("/{teacherId}")
-    public TeacherView getTeacher(@PathVariable("teacherId") long id) {
-        return mapper.map(service.get(id), TeacherView.class);
+    public ResponseEntity<TeacherView> getTeacher(@PathVariable("teacherId") long id) {
+        return ResponseEntity.ok().body(mapper.map(service.get(id), TeacherView.class));
     }
 
     //work
     @PostMapping("/create")
-    public ResponseEntity<Void> createTeacher(@RequestBody CreatePersonModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+        public ResponseEntity<TeacherView> createTeacher(@RequestBody CreatePersonModel model) {
+
+        return ResponseEntity.ok().body(mapper.map(service.create(model), TeacherView.class));
     }
 
     //work
     @PutMapping("/{teacherId}/edit")
-    public ResponseEntity<Void> editTeacher(@PathVariable("teacherId") long id, @RequestBody CreatePersonModel model) {
-        service.edit(id, model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TeacherView> editTeacher(@PathVariable("teacherId") long id, @RequestBody CreatePersonModel model) {
+
+        return ResponseEntity.ok().body(mapper.map(service.edit(id, model), TeacherView.class));
     }
 
     //work

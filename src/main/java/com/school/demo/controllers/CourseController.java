@@ -18,15 +18,15 @@ public class CourseController {
 
     //works
     @GetMapping("/{courseId}")
-    public CourseView getCourse(@PathVariable("courseId") long id) {
-        return mapper.map(service.get(id), CourseView.class);
+    public ResponseEntity<CourseView> getCourse(@PathVariable("courseId") long id) {
+        return ResponseEntity.ok().body(mapper.map(service.get(id), CourseView.class));
     }
 
     //works
     @PostMapping("/create")
-    public ResponseEntity<Void> createCourse(@RequestBody CreateCourseModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CourseView> createCourse(@RequestBody CreateCourseModel model) {
+
+        return ResponseEntity.ok().body(mapper.map(service.create(model), CourseView.class));
     }
 
     //work

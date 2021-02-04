@@ -20,20 +20,21 @@ public class SchoolController {
     private final ModelMapper mapper;
 
     @GetMapping("/{id}")
-    public SchoolView getSchool(@PathVariable long id) {
-        return mapper.map(service.get(id), SchoolView.class);
+    public ResponseEntity<SchoolView> getSchool(@PathVariable long id) {
+
+        return ResponseEntity.ok().body(mapper.map(service.get(id), SchoolView.class));
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createSchool(@RequestBody CreateSchoolModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<SchoolView> createSchool(@RequestBody CreateSchoolModel model) {
+
+        return ResponseEntity.ok().body(mapper.map(service.create(model), SchoolView.class));
     }
 
     @PutMapping("/{id}/edit")
-    public ResponseEntity<Void> editSchool(@PathVariable long id, @RequestBody CreateSchoolModel model) {
-        service.edit(id, model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<SchoolView> editSchool(@PathVariable long id, @RequestBody CreateSchoolModel model) {
+
+        return ResponseEntity.ok().body(mapper.map(service.edit(id, model), SchoolView.class));
     }
 
     @DeleteMapping("/{id}/delete")
