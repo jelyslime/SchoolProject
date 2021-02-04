@@ -11,4 +11,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Vladislav_Zlatanov
  */
 public interface DirectorRepository extends JpaRepository<Director, Long> {
+    Director findByUsername(String userName);
 }

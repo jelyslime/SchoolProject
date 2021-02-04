@@ -1,5 +1,6 @@
 package com.school.demo.repository;
 
+import com.school.demo.entity.Director;
 import com.school.demo.entity.Parent;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author Vladislav_Zlatanov
  */
 public interface ParentRepository extends JpaRepository<Parent, Long> {
+    Parent findByUsername(String userName);
 }
