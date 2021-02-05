@@ -34,7 +34,8 @@ public class SchoolServiceImpl implements SchoolService {
     @Override
     public SchoolDTO get(long schoolId) {
         return converter.convert(repository.findById(schoolId)
-                        .orElseThrow(() -> new NoSuchDataException(String.format("School %s does not exists in records.", schoolId)))
+                        .orElseThrow(() ->
+                                new NoSuchDataException(String.format("School %s does not exists in records.", schoolId)))
                 , SchoolDTO.class);
     }
 
@@ -47,7 +48,6 @@ public class SchoolServiceImpl implements SchoolService {
         repository.save(converter.convert(school, School.class));
         return school;
     }
-
 
 
     @Override
@@ -153,12 +153,7 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean assignStudentToCourse(long schoolId, long courseID, long studentId) {
         SchoolDTO school = this.get(schoolId);
 
-        List<CourseDTO> courses = school.getTeachers()
-                .stream()
-                .map(Teacher::getCourses)
-                .flatMap(Collection::stream)
-                .map(course -> converter.convert(course, CourseDTO.class))
-                .collect(Collectors.toList());
+        List<CourseDTO> courses = getCourseDTO(school);
 
 
         if (!courses.contains(courseService.get(courseID))) {
@@ -172,16 +167,13 @@ public class SchoolServiceImpl implements SchoolService {
         return courseService.addStudent(courseID, studentDTO);
     }
 
+
+
     @Override
     public boolean removeStudentFromCourse(long schoolId, long courseID, long studentId) {
         SchoolDTO school = this.get(schoolId);
 
-        List<CourseDTO> courses = school.getTeachers()
-                .stream()
-                .map(Teacher::getCourses)
-                .flatMap(Collection::stream)
-                .map(course -> converter.convert(course, CourseDTO.class))
-                .collect(Collectors.toList());
+        List<CourseDTO> courses = getCourseDTO(school);
 
 
         if (!courses.contains(courseService.get(courseID))) {
@@ -200,7 +192,6 @@ public class SchoolServiceImpl implements SchoolService {
     @Override
     public Map<String, Double> avgGradeOnStudents(long schoolId) {
         SchoolDTO school = converter.convert(repository.findById(schoolId).orElse(new School()), SchoolDTO.class);
-
 
         List<StudentDTO> students = converter.convertList(school.getStudents(), StudentDTO.class);
 
@@ -229,6 +220,14 @@ public class SchoolServiceImpl implements SchoolService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    private List<CourseDTO> getCourseDTO(SchoolDTO school) {
+        return school.getTeachers()
+                .stream()
+                .map(Teacher::getCourses)
+                .flatMap(Collection::stream)
+                .map(course -> converter.convert(course, CourseDTO.class))
+                .collect(Collectors.toList());
+    }
 
     private SchoolDTO populateSchool(CreateSchoolModel model) {
         SchoolDTO school = new SchoolDTO();

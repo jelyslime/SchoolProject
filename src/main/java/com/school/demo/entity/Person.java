@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 
 /**

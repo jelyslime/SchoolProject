@@ -1,13 +1,11 @@
 package com.school.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -29,15 +27,12 @@ public class School extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "director_id", referencedColumnName = "id")
-    @JsonIgnoreProperties("school")
     private Director director;
 
-    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY, mappedBy = "school")
-    @JsonIgnoreProperties("school")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "school")
     private List<Teacher> teachers;
 
-    @OneToMany(cascade = CascadeType.ALL , fetch = FetchType.LAZY, mappedBy = "school")
-    @JsonIgnoreProperties("school")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "school")
     private List<Student> students;
 
 

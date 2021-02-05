@@ -13,7 +13,6 @@ import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -24,9 +23,9 @@ import java.util.Map;
 @Service
 @AllArgsConstructor
 public class ParentServiceImpl implements ParentService {
+
     private final GenericConverter converter;
     private final ParentRepository repository;
-    private final ModelMapper mapper;
     private final StudentServiceImpl service;
     private final Validator validator;
 
@@ -34,7 +33,7 @@ public class ParentServiceImpl implements ParentService {
     public ParentDTO get(long parentId) {
         return converter.convert(repository.findById(parentId)
                         .orElseThrow(() -> new NoSuchDataException(String.format("Parent %s does not exists in records.", parentId)))
-                ,ParentDTO.class);
+                , ParentDTO.class);
     }
 
     @Override
@@ -84,12 +83,12 @@ public class ParentServiceImpl implements ParentService {
         parent.getKids().add(converter.convert(student, Student.class));
 
 
-        Parent ent = converter.convert(parent,Parent.class);
+        Parent ent = converter.convert(parent, Parent.class);
 
 
-        ent.getKids().add(converter.convert(student,Student.class));
+        ent.getKids().add(converter.convert(student, Student.class));
 
-       repository.saveAndFlush(ent);
+        repository.saveAndFlush(ent);
         return true;
     }
 
@@ -107,7 +106,7 @@ public class ParentServiceImpl implements ParentService {
     public Map<String, List<CourseIdAndGradesView>> getAllGrades(long parentId) {
         ParentDTO parentDTO = this.get(parentId);
 
-        List<StudentDTO> kids = converter.convertList(parentDTO.getKids(),StudentDTO.class);
+        List<StudentDTO> kids = converter.convertList(parentDTO.getKids(), StudentDTO.class);
 
         Map<String, List<CourseIdAndGradesView>> kidsGrades = new HashMap<>();
 
@@ -123,7 +122,7 @@ public class ParentServiceImpl implements ParentService {
     public Map<String, List<TeacherView>> getAllTeachers(long parentId) {
         ParentDTO parentDTO = this.get(parentId);
 
-        List<StudentDTO> kids = converter.convertList(parentDTO.getKids(),StudentDTO.class);
+        List<StudentDTO> kids = converter.convertList(parentDTO.getKids(), StudentDTO.class);
 
         Map<String, List<TeacherView>> kidsGrades = new HashMap<>();
 

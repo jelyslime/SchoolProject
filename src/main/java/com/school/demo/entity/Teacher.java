@@ -1,6 +1,5 @@
 package com.school.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,11 +19,10 @@ import java.util.Set;
 @Entity
 @Table(name = "teacher")
 public class Teacher extends Person {
-    @ManyToOne(targetEntity=School.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = School.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "school_id")
     private School school;
 
     @OneToMany(mappedBy = "teacher")
-    @JsonIgnoreProperties("teacher")
     private Set<Course> courses;
 }

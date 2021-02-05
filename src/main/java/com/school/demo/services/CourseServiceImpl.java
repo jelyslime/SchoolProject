@@ -11,7 +11,6 @@ import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreateCourseModel;
 import com.school.demo.repository.CourseRepository;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -23,14 +22,13 @@ import java.util.stream.Collectors;
 public class CourseServiceImpl implements CourseService {
 
     private final GenericConverter converter;
-    private final ModelMapper mapper;
     private final CourseRepository courseRepository;
     private final TeacherServiceImpl service;
     private final StudentServiceImpl studentService;
 
     @Override
     public CourseDTO get(long curseId) {
-        return mapper.map(courseRepository.findById(curseId)
+        return converter.convert(courseRepository.findById(curseId)
                         .orElseThrow(() -> new NoSuchDataException(String.format("Curse %s does not exists in records.", curseId)))
                 , CourseDTO.class);
     }
@@ -39,18 +37,10 @@ public class CourseServiceImpl implements CourseService {
     public CourseDTO create(CreateCourseModel model) {
         CourseDTO course = populateCourse(model);
 
-        Course entity = mapper.map(course, Course.class);
+        Course entity = converter.convert(course, Course.class);
         entity = courseRepository.save(entity);
 
         return converter.convert(entity, CourseDTO.class);
-    }
-
-    private CourseDTO populateCourse(CreateCourseModel model) {
-        CourseDTO course = new CourseDTO();
-        course.setGrades(new HashSet<>());
-        course.setStudents(new HashSet<>());
-        course.setTeacher(converter.convert(service.get(model.getTeacherId()), Teacher.class));
-        return course;
     }
 
 
@@ -61,7 +51,7 @@ public class CourseServiceImpl implements CourseService {
         course.setStudents(new HashSet<>());
         course.setTeacher(new Teacher());
 
-        courseRepository.save(mapper.map(course, Course.class));
+        courseRepository.save(converter.convert(course, Course.class));
 
         return true;
     }
@@ -81,9 +71,9 @@ public class CourseServiceImpl implements CourseService {
     public boolean assignTeacher(long courseId, TeacherDTO teacher) {
         CourseDTO courseDTO = this.get(courseId);
 
-        courseDTO.setTeacher(mapper.map(teacher, Teacher.class));
+        courseDTO.setTeacher(converter.convert(teacher, Teacher.class));
 
-        courseRepository.save(mapper.map(courseDTO, Course.class));
+        courseRepository.save(converter.convert(courseDTO, Course.class));
 
         return true;
     }
@@ -93,9 +83,9 @@ public class CourseServiceImpl implements CourseService {
         TeacherDTO teacher = service.get(teacherId);
         CourseDTO course = this.get(courseId);
 
-        course.setTeacher(mapper.map(teacher, Teacher.class));
+        course.setTeacher(converter.convert(teacher, Teacher.class));
 
-        courseRepository.saveAndFlush(mapper.map(course, Course.class));
+        courseRepository.saveAndFlush(converter.convert(course, Course.class));
         return true;
     }
 
@@ -104,9 +94,9 @@ public class CourseServiceImpl implements CourseService {
         CourseDTO courseDTO = this.get(courseId);
 
 
-        courseDTO.getStudents().add((mapper.map(student, Student.class)));
+        courseDTO.getStudents().add((converter.convert(student, Student.class)));
 
-        courseRepository.saveAndFlush(mapper.map(courseDTO, Course.class));
+        courseRepository.saveAndFlush(converter.convert(courseDTO, Course.class));
 
         return true;
     }
@@ -127,7 +117,7 @@ public class CourseServiceImpl implements CourseService {
 
         courseDTO.setStudents(studentSet);
 
-        courseRepository.saveAndFlush(mapper.map(courseDTO, Course.class));
+        courseRepository.saveAndFlush(converter.convert(courseDTO, Course.class));
 
         return true;
     }
@@ -135,6 +125,14 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public boolean removeStudent(long courseId, long studentId) {
         return this.removeStudent(courseId, studentService.get(studentId));
+    }
+
+    private CourseDTO populateCourse(CreateCourseModel model) {
+        CourseDTO course = new CourseDTO();
+        course.setGrades(new HashSet<>());
+        course.setStudents(new HashSet<>());
+        course.setTeacher(converter.convert(service.get(model.getTeacherId()), Teacher.class));
+        return course;
     }
 
 

@@ -1,17 +1,11 @@
 package com.school.demo.services;
 
-import com.school.demo.controllers.SchoolController;
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
-import com.school.demo.dto.SchoolDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.dto.TeacherDTO;
-import com.school.demo.entity.Course;
-import com.school.demo.entity.Grade;
-import com.school.demo.entity.Role;
-import com.school.demo.entity.School;
-import com.school.demo.entity.Student;
-import com.school.demo.entity.Teacher;
+import com.school.demo.entity.*;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.repository.GradeRepository;
@@ -20,14 +14,9 @@ import com.school.demo.validator.Validator;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,7 +24,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class TeacherServiceImpl implements TeacherService {
 
-    private final ModelMapper mapper;
+    private final GenericConverter converter;
     private final TeacherRepository repository;
     private final GradeRepository gradeRepository;
     private final Validator validator;
@@ -43,7 +32,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherDTO get(long teacherId) {
-        return mapper.map(repository.findById(teacherId)
+        return converter.convert(repository.findById(teacherId)
                         .orElseThrow(() -> new NoSuchDataException(String.format("Teacher %s does not exists in records.", teacherId)))
                 , TeacherDTO.class);
     }
@@ -51,43 +40,30 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public TeacherDTO create(CreatePersonModel model) {
         Role role = Role.TEACHER;
-        validator.validateRole(role);
-        validator.validateUsername(model.getUsername());
-        validator.validatePassword(model.getPassword());
+        validateModel(model, role);
 
-        TeacherDTO teacherDTO = new TeacherDTO();
+        TeacherDTO teacherDTO = initialPopulationTeacherDTO(model);
+        teacherDTO.setRole(role);
 
-        teacherDTO.setCourses(new HashSet<>());
-        teacherDTO.setCourses(new HashSet<>());
-        teacherDTO.setSchool(null);
-
-        teacherDTO.setFirstName(model.getFirstName());
-        teacherDTO.setLastName(model.getLastName());
-        teacherDTO.setUsername(model.getUsername());
-        teacherDTO.setPassword(model.getPassword());
-
-        Teacher entity = mapper.map(teacherDTO,Teacher.class);
-        return mapper.map(repository.save(entity),TeacherDTO.class);
+        Teacher entity = converter.convert(teacherDTO, Teacher.class);
+        return converter.convert(repository.save(entity), TeacherDTO.class);
     }
+
 
     @Override
     public TeacherDTO edit(long id, CreatePersonModel model) {
         Role role = Role.TEACHER;
-        validator.validateRole(role);
-        validator.validateUsername(model.getUsername());
-        validator.validatePassword(model.getPassword());
+        validateModel(model, role);
 
         TeacherDTO teacherDTO = new TeacherDTO();
 
-        teacherDTO.setFirstName(model.getFirstName());
-        teacherDTO.setLastName(model.getLastName());
-        teacherDTO.setUsername(model.getUsername());
-        teacherDTO.setPassword(model.getPassword());
+        populateTeacherDTO(model, teacherDTO);
         teacherDTO.setId(id);
 
-        Teacher entity = mapper.map(teacherDTO,Teacher.class);
-        return mapper.map(repository.save(entity),TeacherDTO.class);
+        Teacher entity = converter.convert(teacherDTO, Teacher.class);
+        return converter.convert(repository.save(entity), TeacherDTO.class);
     }
+
 
     @Override
     public boolean delete(long id) {
@@ -107,43 +83,17 @@ public class TeacherServiceImpl implements TeacherService {
 
         Set<Course> courses = teacher.getCourses();
 
-        Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> courseIdStudentGradesMap = new HashMap<>();
-
-        for (Course course : courses) {
-
-            Map<Student, List<GradeAsValueView>> studentGradesForCourse = course.getStudents()
-                    .stream()
-                    .collect(Collectors.toMap(Function.identity(), student -> student.getGrades()
-                            .stream()
-                            .filter(grade -> grade.getCourse().equals(course))
-                            .map(grade -> mapper.map(grade, GradeAsValueView.class))
-                            .collect(Collectors.toList()))
-                    );
-
-            Set<Map.Entry<Student, List<GradeAsValueView>>> entrySet = studentGradesForCourse.entrySet();
-            Map<PersonNamesView, List<GradeAsValueView>> buffer = new HashMap<>();
-
-            for (Map.Entry<Student, List<GradeAsValueView>> studentListEntry : entrySet) {
-                PersonNamesView key = mapper.map(studentListEntry.getKey(), PersonNamesView.class);
-                List<GradeAsValueView> value = studentListEntry.getValue();
-                buffer.put(key, value);
-            }
-
-
-            courseIdStudentGradesMap.put(course.getId(), buffer);
-        }
-
-        return courseIdStudentGradesMap;
+        return getCourseAndGrades(courses);
     }
 
 
-@Override
-    public boolean removeSchool(long id){
+    @Override
+    public boolean removeSchool(long id) {
         TeacherDTO teacher = this.get(id);
 
         teacher.setSchool(null);
 
-        repository.saveAndFlush(mapper.map(teacher,Teacher.class));
+        repository.saveAndFlush(converter.convert(teacher, Teacher.class));
         return true;
     }
 
@@ -153,27 +103,13 @@ public class TeacherServiceImpl implements TeacherService {
         validator.validateGrade(grade);
         TeacherDTO teacher = this.get(id);
 
-        CourseDTO course = mapper.map(teacher.getCourses()
-                        .stream()
-                        .filter(x -> x.getId() == course_id)
-                        .findFirst()
-                        .orElseThrow(() ->
-                                new NoSuchDataException(String.format("Teacher %s does not have course %s.", id, course_id)))
-                , CourseDTO.class);
+        CourseDTO course = getCourseDTO(id, course_id, teacher.getCourses());
 
-        StudentDTO student = mapper.map(course.getStudents().stream()
-                        .filter(x -> x.getId() == student_id)
-                        .findFirst()
-                        .orElseThrow(() ->
-                                new NoSuchDataException(String.format("Student %s not found in course %s.", student_id, course_id)))
-                , StudentDTO.class);
+        StudentDTO student = getStudentDTO(course_id, student_id, course);
 
-        GradeDTO grade1 = new GradeDTO();
-        grade1.setCourse(mapper.map(course, Course.class));
-        grade1.setStudent(mapper.map(student, Student.class));
-        grade1.setGrade(grade);
+        GradeDTO gradeAsObject = createNewGradeDTO(grade, course, student);
 
-        return gradeRepository.save(mapper.map(grade1, Grade.class));
+        return gradeRepository.save(converter.convert(gradeAsObject, Grade.class));
     }
 
     @Override
@@ -182,47 +118,122 @@ public class TeacherServiceImpl implements TeacherService {
 
         TeacherDTO teacher = this.get(id);
 
-        CourseDTO course = mapper.map(teacher.getCourses()
-                        .stream()
-                        .filter(x -> x.getId() == course_id)
-                        .findFirst()
-                        .orElseThrow(() ->
-                                new NoSuchDataException(String.format("Teacher %s does not have course %s.", id, course_id)))
-                , CourseDTO.class);
+        CourseDTO course = getCourseDTO(id, course_id, teacher.getCourses());
 
-        GradeDTO gradeDTO = mapper.map(course.getGrades()
-                        .stream()
-                        .filter(x -> x.getId() == grade_id)
-                        .findFirst()
-                        .orElseThrow(() ->
-                                new NoSuchDataException(String.format("Course %s does not have grade with id %s.", course_id, grade_id)))
-                , GradeDTO.class);
+        GradeDTO gradeDTO = getGradeDTO(course_id, grade_id, course);
 
         gradeDTO.setGrade(grade);
 
-        return gradeRepository.save(mapper.map(gradeDTO, Grade.class));
+        return gradeRepository.save(converter.convert(gradeDTO, Grade.class));
     }
 
     @Override
     public void deleteGrade(long id, long course_id, long grade_id) {
         Teacher teacher = repository.findById(id).orElse(new Teacher());
 
-        CourseDTO course = mapper.map(teacher.getCourses()
+        CourseDTO course = getCourseDTO(id, course_id, teacher.getCourses());
+
+        GradeDTO gradeDTO = getGradeDTO(course_id, grade_id, course);
+
+        gradeRepository.delete(converter.convert(gradeDTO, Grade.class));
+    }
+
+    private void populateTeacherDTO(CreatePersonModel model, TeacherDTO teacherDTO) {
+        teacherDTO.setFirstName(model.getFirstName());
+        teacherDTO.setLastName(model.getLastName());
+        teacherDTO.setUsername(model.getUsername());
+        teacherDTO.setPassword(model.getPassword());
+    }
+
+    private TeacherDTO initialPopulationTeacherDTO(CreatePersonModel model) {
+        TeacherDTO teacherDTO = new TeacherDTO();
+
+        teacherDTO.setCourses(new HashSet<>());
+        teacherDTO.setCourses(new HashSet<>());
+        teacherDTO.setSchool(null);
+
+        populateTeacherDTO(model, teacherDTO);
+        return teacherDTO;
+    }
+
+    private void validateModel(CreatePersonModel model, Role role) {
+        validator.validateRole(role);
+        validator.validateUsername(model.getUsername());
+        validator.validatePassword(model.getPassword());
+    }
+
+    private GradeDTO getGradeDTO(long course_id, long grade_id, CourseDTO course) {
+        return converter.convert(course.getGrades()
+                        .stream()
+                        .filter(x -> x.getId() == grade_id)
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new NoSuchDataException(String.format("Course %s does not have grade with id %s.", course_id, grade_id)))
+                , GradeDTO.class);
+    }
+
+    private CourseDTO getCourseDTO(long id, long course_id, Set<Course> courses) {
+        return converter.convert(courses
                         .stream()
                         .filter(x -> x.getId() == course_id)
                         .findFirst()
                         .orElseThrow(() ->
                                 new NoSuchDataException(String.format("Teacher %s does not have course with id %s.", id, course_id)))
                 , CourseDTO.class);
-
-        GradeDTO gradeDTO = mapper.map(course.getGrades()
-                        .stream()
-                        .filter(x -> x.getId() == grade_id)
-                        .findFirst().orElseThrow(() ->
-                                new NoSuchDataException(String.format("Course %s does not have grade with id %s.", course_id, grade_id)))
-                , GradeDTO.class);
-
-        gradeRepository.delete(mapper.map(gradeDTO, Grade.class));
     }
 
+    private StudentDTO getStudentDTO(long course_id, long student_id, CourseDTO course) {
+        return converter.convert(course.getStudents().stream()
+                        .filter(x -> x.getId() == student_id)
+                        .findFirst()
+                        .orElseThrow(() ->
+                                new NoSuchDataException(String.format("Student %s not found in course %s.", student_id, course_id)))
+                , StudentDTO.class);
+    }
+
+    private GradeDTO createNewGradeDTO(double grade, CourseDTO course, StudentDTO student) {
+        GradeDTO grade1 = new GradeDTO();
+        grade1.setCourse(converter.convert(course, Course.class));
+        grade1.setStudent(converter.convert(student, Student.class));
+        grade1.setGrade(grade);
+        return grade1;
+    }
+
+    private Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getCourseAndGrades(Set<Course> courses) {
+        Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> courseIdStudentGradesMap = new HashMap<>();
+
+        for (Course course : courses) {
+
+            Map<Student, List<GradeAsValueView>> studentGradesForCourse = getStudentAllGradesPerSubject(course);
+
+            Set<Map.Entry<Student, List<GradeAsValueView>>> entrySet = studentGradesForCourse.entrySet();
+
+            Map<PersonNamesView, List<GradeAsValueView>> buffer = bufferGradesPerStudent(entrySet);
+
+            courseIdStudentGradesMap.put(course.getId(), buffer);
+        }
+        return courseIdStudentGradesMap;
+    }
+
+    private Map<PersonNamesView, List<GradeAsValueView>> bufferGradesPerStudent(Set<Map.Entry<Student, List<GradeAsValueView>>> entrySet) {
+        Map<PersonNamesView, List<GradeAsValueView>> buffer = new HashMap<>();
+
+        for (Map.Entry<Student, List<GradeAsValueView>> studentListEntry : entrySet) {
+            PersonNamesView key = converter.convert(studentListEntry.getKey(), PersonNamesView.class);
+            List<GradeAsValueView> value = studentListEntry.getValue();
+            buffer.put(key, value);
+        }
+        return buffer;
+    }
+
+    private Map<Student, List<GradeAsValueView>> getStudentAllGradesPerSubject(Course course) {
+       return course.getStudents()
+                .stream()
+                .collect(Collectors.toMap(Function.identity(), student -> student.getGrades()
+                        .stream()
+                        .filter(grade -> grade.getCourse().equals(course))
+                        .map(grade -> converter.convert(grade, GradeAsValueView.class))
+                        .collect(Collectors.toList()))
+                );
+    }
 }

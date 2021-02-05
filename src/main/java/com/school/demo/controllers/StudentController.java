@@ -1,23 +1,14 @@
 package com.school.demo.controllers;
 
-import com.school.demo.models.CreateDirectorModel;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.services.StudentService;
 import com.school.demo.views.CourseIdAndGradesView;
-import com.school.demo.views.DirectorView;
 import com.school.demo.views.StudentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 

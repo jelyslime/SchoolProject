@@ -32,8 +32,8 @@ public class DirectorServiceImpl implements DirectorService {
 
     @Override
     public DirectorDTO get(long directorId) {
-        return convertToDTO(directorRepository.findById(directorId)
-                .orElseThrow(() -> new NoSuchDataException(String.format("Director %s does not exists in records.", directorId)))
+        return converter.convert(directorRepository.findById(directorId)
+                        .orElseThrow(() -> new NoSuchDataException(String.format("Director %s does not exists in records.", directorId)))
                 , DirectorDTO.class);
     }
 
@@ -49,7 +49,6 @@ public class DirectorServiceImpl implements DirectorService {
         directorRepository.save(mapper.map(director, Director.class));
         return director;
     }
-
 
 
     @Override
@@ -88,16 +87,15 @@ public class DirectorServiceImpl implements DirectorService {
         List<Course> courses = new ArrayList<>();
         setList.forEach(courses::addAll);
 
-        return converter.convertList(courses,CourseIdAndGradesView.class);
+        return converter.convertList(courses, CourseIdAndGradesView.class);
     }
-
 
 
     @Override
     public List<TeacherView> getAllTeachers(long directorId) {
         DirectorDTO director = this.get(directorId);
 
-        return converter.convertList(director.getSchool().getTeachers(),TeacherView.class);
+        return converter.convertList(director.getSchool().getTeachers(), TeacherView.class);
     }
 
     @Override
@@ -109,15 +107,15 @@ public class DirectorServiceImpl implements DirectorService {
         List<Parent> parents = new ArrayList<>();
         setOfParents.forEach(parents::addAll);
 
-        return converter.convertList(parents,ParentDirectorView.class);
+        return converter.convertList(parents, ParentDirectorView.class);
     }
 
     private List<Set<Parent>> getSetOfParents(DirectorDTO director) {
-        List<Set<Parent>> setOfParents = director.getSchool().getStudents()
+        return director.getSchool().getStudents()
                 .stream()
                 .map(Student::getParents)
                 .collect(Collectors.toList());
-        return setOfParents;
+
     }
 
     private void populateDirector(CreateDirectorModel model, Role role, DirectorDTO director) {
@@ -139,21 +137,15 @@ public class DirectorServiceImpl implements DirectorService {
 
     private List<Set<Course>> getSetOfCourses(List<TeacherDTO> teacherDTOS) {
         //using .flatmap in stream brakes the whole container
-        List<Set<Course>> setList = teacherDTOS
+        return teacherDTOS
                 .stream()
                 .map(TeacherDTO::getCourses)
                 .collect(Collectors.toList());
-        return setList;
+
     }
 
     private List<TeacherDTO> getTeacherDTOS(DirectorDTO director) {
-        return  director.getSchool().getTeachers()
-                .stream()
-                .map(x -> convertToDTO(x, TeacherDTO.class))
-                .collect(Collectors.toList());
+        return converter.convertList(director.getSchool().getTeachers(), TeacherDTO.class);
     }
 
-    private <T, S> S convertToDTO(T toBeConverted, Class<S> type) {
-        return mapper.map(toBeConverted, type);
-    }
 }

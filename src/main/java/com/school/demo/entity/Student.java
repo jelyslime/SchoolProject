@@ -20,13 +20,12 @@ import java.util.Set;
 @Entity
 @Table(name = "student")
 public class Student extends Person {
-    @ManyToOne(targetEntity=School.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_id")
+
+    @ManyToOne(targetEntity = School.class, fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"director", "teachers", "students"})
     private School school;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "students")
-    @JsonIgnoreProperties("student")
     private Set<Course> courses;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "kids")
@@ -34,9 +33,7 @@ public class Student extends Person {
 
 
     @OneToMany(mappedBy = "student")
-    @JsonIgnoreProperties("student")
     private Set<Grade> grades;
-
 
 
 }

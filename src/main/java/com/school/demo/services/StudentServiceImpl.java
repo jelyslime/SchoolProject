@@ -1,13 +1,10 @@
 package com.school.demo.services;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
 import com.school.demo.dto.StudentDTO;
-import com.school.demo.entity.Course;
-import com.school.demo.entity.Grade;
-import com.school.demo.entity.Role;
-import com.school.demo.entity.School;
-import com.school.demo.entity.Student;
+import com.school.demo.entity.*;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.repository.StudentRepository;
@@ -16,7 +13,6 @@ import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.SimpleGradeView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,60 +25,43 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class StudentServiceImpl implements StudentService {
 
-
-    //TODO:FINISH FACTORING.
-    private final StudentRepository repository;
-    private final ModelMapper mapper;
+    private final GenericConverter converter;
     private final Validator validator;
+
+    private final StudentRepository repository;
 
     @Override
     public StudentDTO get(long studentId) {
-        return mapper.map(repository.findById(studentId)
-                        .orElseThrow(() -> new NoSuchDataException(String.format("Student %s does not exists in records.", studentId)))
+        return converter.convert(repository.findById(studentId)
+                        .orElseThrow(() ->
+                                new NoSuchDataException(String.format("Student %s does not exists in records.", studentId)))
                 , StudentDTO.class);
     }
 
     @Override
     public StudentDTO create(CreatePersonModel model) {
         Role role = Role.STUDENT;
-        validator.validateRole(role);
-        validator.validateUsername(model.getUsername());
-        validator.validatePassword(model.getPassword());
+        validateModel(model, role);
 
-        StudentDTO studentDTO = new StudentDTO();
+        StudentDTO studentDTO = initialPopulationStudentDTO(model);
+        studentDTO.setRole(role);
 
-        studentDTO.setCourses(new HashSet<>());
-        studentDTO.setGrades(new HashSet<>());
-        studentDTO.setSchool(new School());
-        studentDTO.setParents(new HashSet<>());
-
-        studentDTO.setFirstName(model.getFirstName());
-        studentDTO.setLastName(model.getLastName());
-        studentDTO.setUsername(model.getUsername());
-        studentDTO.setPassword(model.getPassword());
-
-        Student entity = mapper.map(studentDTO,Student.class);
-        return mapper.map(repository.save(entity),StudentDTO.class);
+        Student entity = converter.convert(studentDTO, Student.class);
+        return converter.convert(repository.save(entity), StudentDTO.class);
 
     }
 
     @Override
     public StudentDTO edit(long id, CreatePersonModel model) {
         Role role = Role.STUDENT;
-        validator.validateRole(role);
-        validator.validateUsername(model.getUsername());
-        validator.validatePassword(model.getPassword());
+        validateModel(model, role);
 
-        StudentDTO studentDTO = new StudentDTO();
-
-        studentDTO.setFirstName(model.getFirstName());
-        studentDTO.setLastName(model.getLastName());
-        studentDTO.setUsername(model.getUsername());
-        studentDTO.setPassword(model.getPassword());
+        StudentDTO studentDTO = populateStudentDTO(model);
         studentDTO.setId(id);
+        studentDTO.setRole(role);
 
-        Student entity = mapper.map(studentDTO,Student.class);
-        return mapper.map(repository.save(entity),StudentDTO.class);
+        Student entity = converter.convert(studentDTO, Student.class);
+        return converter.convert(repository.save(entity), StudentDTO.class);
 
     }
 
@@ -103,39 +82,19 @@ public class StudentServiceImpl implements StudentService {
 
         studentDTO.setSchool(null);
 
-        repository.saveAndFlush(mapper.map(studentDTO, Student.class));
+        repository.saveAndFlush(converter.convert(studentDTO, Student.class));
         return true;
     }
-
 
     @Override
     public List<CourseIdAndGradesView> getAllGrades(long studentId) {
         StudentDTO student = this.get(studentId);
 
-        Set<GradeDTO> grades = student.getGrades()
-                .stream()
-                .map(x -> mapper.map(x, GradeDTO.class))
-                .collect(Collectors.toSet());
+        Set<GradeDTO> grades = converter.convertSet(student.getGrades(),GradeDTO.class);
 
-        Set<CourseDTO> courseDTOS = student.getCourses()
-                .stream()
-                .map(x -> mapper.map(x, CourseDTO.class))
-                .collect(Collectors.toSet());
+        Set<CourseDTO> courseDTOS = converter.convertSet(student.getCourses(),CourseDTO.class);
 
-        List<CourseIdAndGradesView> courseIdAndGradesViews = new ArrayList<>();
-
-        for (CourseDTO courseDTO : courseDTOS) {
-            CourseIdAndGradesView view = new CourseIdAndGradesView();
-            view.setId(courseDTO.getId());
-            view.setGrades(grades
-                    .stream()
-                    .filter(x -> x.getCourse().getId() == courseDTO.getId())
-                    .map(x -> mapper.map(x, SimpleGradeView.class))
-                    .collect(Collectors.toList()));
-            courseIdAndGradesViews.add(view);
-        }
-
-        return courseIdAndGradesViews;
+        return getCourseIdAndGradesViews(grades, courseDTOS);
     }
 
     @Override
@@ -145,7 +104,7 @@ public class StudentServiceImpl implements StudentService {
         return student.getCourses()
                 .stream()
                 .map(Course::getTeacher)
-                .map(teacher -> mapper.map(teacher, TeacherView.class))
+                .map(teacher -> converter.convert(teacher, TeacherView.class))
                 .collect(Collectors.toList());
     }
 
@@ -159,5 +118,51 @@ public class StudentServiceImpl implements StudentService {
                 .average().orElse(2.0);
     }
 
+    private StudentDTO initialPopulationStudentDTO(CreatePersonModel model) {
+        StudentDTO studentDTO = new StudentDTO();
+
+        studentDTO.setCourses(new HashSet<>());
+        studentDTO.setGrades(new HashSet<>());
+        studentDTO.setSchool(new School());
+        studentDTO.setParents(new HashSet<>());
+
+        studentDTO.setFirstName(model.getFirstName());
+        studentDTO.setLastName(model.getLastName());
+        studentDTO.setUsername(model.getUsername());
+        studentDTO.setPassword(model.getPassword());
+        return studentDTO;
+    }
+
+    private void validateModel(CreatePersonModel model, Role role) {
+        validator.validateRole(role);
+        validator.validateUsername(model.getUsername());
+        validator.validatePassword(model.getPassword());
+    }
+
+    private StudentDTO populateStudentDTO(CreatePersonModel model) {
+        StudentDTO studentDTO = new StudentDTO();
+
+        studentDTO.setFirstName(model.getFirstName());
+        studentDTO.setLastName(model.getLastName());
+        studentDTO.setUsername(model.getUsername());
+        studentDTO.setPassword(model.getPassword());
+        return studentDTO;
+    }
+
+    private List<CourseIdAndGradesView> getCourseIdAndGradesViews(Set<GradeDTO> grades, Set<CourseDTO> courseDTOS) {
+        List<CourseIdAndGradesView> courseIdAndGradesViews = new ArrayList<>();
+
+        for (CourseDTO courseDTO : courseDTOS) {
+            CourseIdAndGradesView view = new CourseIdAndGradesView();
+            view.setId(courseDTO.getId());
+            view.setGrades(grades
+                    .stream()
+                    .filter(x -> x.getCourse().getId() == courseDTO.getId())
+                    .map(x -> converter.convert(x, SimpleGradeView.class))
+                    .collect(Collectors.toList()));
+            courseIdAndGradesViews.add(view);
+        }
+        return courseIdAndGradesViews;
+    }
 
 }

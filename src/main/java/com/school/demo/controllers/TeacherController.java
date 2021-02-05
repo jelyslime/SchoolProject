@@ -4,7 +4,6 @@ import com.school.demo.models.CreatePersonModel;
 import com.school.demo.services.TeacherServiceImpl;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
-import com.school.demo.views.StudentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -19,8 +18,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class TeacherController {
 
-    TeacherServiceImpl service;
     private final ModelMapper mapper;
+    TeacherServiceImpl service;
 
     //work
     @GetMapping("/{teacherId}")
@@ -52,6 +51,7 @@ public class TeacherController {
             return ResponseEntity.badRequest().build();
         }
     }
+
     @GetMapping("/{id}/get/all/students/grades")
     Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getAllStudentGradesByTeacherId(@PathVariable("id") long id) {
         return service.getAllStudentGrades(id);
