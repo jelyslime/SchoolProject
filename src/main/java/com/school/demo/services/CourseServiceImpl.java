@@ -1,10 +1,10 @@
 package com.school.demo.services;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.Course;
-import com.school.demo.entity.Parent;
 import com.school.demo.entity.Student;
 import com.school.demo.entity.Teacher;
 import com.school.demo.exception.NoSuchDataException;
@@ -15,7 +15,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,9 +22,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CourseServiceImpl implements CourseService {
 
+    private final GenericConverter converter;
     private final ModelMapper mapper;
     private final CourseRepository courseRepository;
-    private final  TeacherServiceImpl service;
+    private final TeacherServiceImpl service;
     private final StudentServiceImpl studentService;
 
     @Override
@@ -37,15 +37,20 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO create(CreateCourseModel model) {
+        CourseDTO course = populateCourse(model);
+
+        Course entity = mapper.map(course, Course.class);
+        entity = courseRepository.save(entity);
+
+        return converter.convert(entity, CourseDTO.class);
+    }
+
+    private CourseDTO populateCourse(CreateCourseModel model) {
         CourseDTO course = new CourseDTO();
         course.setGrades(new HashSet<>());
         course.setStudents(new HashSet<>());
-        course.setTeacher(mapper.map(service.get(model.getTeacherId()),Teacher.class));
-
-        Course entity = mapper.map(course,Course.class);
-        entity = courseRepository.save(entity);
-
-        return mapper.map(entity,CourseDTO.class);
+        course.setTeacher(converter.convert(service.get(model.getTeacherId()), Teacher.class));
+        return course;
     }
 
 
@@ -76,7 +81,6 @@ public class CourseServiceImpl implements CourseService {
     public boolean assignTeacher(long courseId, TeacherDTO teacher) {
         CourseDTO courseDTO = this.get(courseId);
 
-
         courseDTO.setTeacher(mapper.map(teacher, Teacher.class));
 
         courseRepository.save(mapper.map(courseDTO, Course.class));
@@ -89,9 +93,9 @@ public class CourseServiceImpl implements CourseService {
         TeacherDTO teacher = service.get(teacherId);
         CourseDTO course = this.get(courseId);
 
-        course.setTeacher(mapper.map(teacher,Teacher.class));
+        course.setTeacher(mapper.map(teacher, Teacher.class));
 
-        courseRepository.saveAndFlush(mapper.map(course,Course.class));
+        courseRepository.saveAndFlush(mapper.map(course, Course.class));
         return true;
     }
 
@@ -109,9 +113,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean addStudent(long courseId, long studentId) {
-        return this.addStudent(courseId,studentService.get(studentId));
+        return this.addStudent(courseId, studentService.get(studentId));
     }
-
 
 
     @Override
@@ -119,7 +122,7 @@ public class CourseServiceImpl implements CourseService {
         CourseDTO courseDTO = this.get(courseId);
 
         Set<Student> studentSet = courseDTO.getStudents().stream()
-                .filter(student1 -> student1.getId()!= student.getId())
+                .filter(student1 -> student1.getId() != student.getId())
                 .collect(Collectors.toSet());
 
         courseDTO.setStudents(studentSet);
@@ -131,7 +134,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean removeStudent(long courseId, long studentId) {
-        return this.removeStudent(courseId,studentService.get(studentId));
+        return this.removeStudent(courseId, studentService.get(studentId));
     }
 
 

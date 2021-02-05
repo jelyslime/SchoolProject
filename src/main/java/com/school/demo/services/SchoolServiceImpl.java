@@ -1,7 +1,7 @@
 package com.school.demo.services;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.dto.*;
-import com.school.demo.entity.Course;
 import com.school.demo.entity.Director;
 import com.school.demo.entity.School;
 import com.school.demo.entity.Student;
@@ -12,7 +12,6 @@ import com.school.demo.repository.DirectorRepository;
 import com.school.demo.repository.SchoolRepository;
 import com.school.demo.validator.Validator;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,8 +21,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SchoolServiceImpl implements SchoolService {
 
+    private final GenericConverter converter;
     private final SchoolRepository repository;
-    private final ModelMapper mapper;
+
     private final StudentServiceImpl service;
     private final DirectorRepository directorService;
     private final StudentServiceImpl studentService;
@@ -33,38 +33,33 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public SchoolDTO get(long schoolId) {
-        return mapper.map(repository.findById(schoolId)
+        return converter.convert(repository.findById(schoolId)
                         .orElseThrow(() -> new NoSuchDataException(String.format("School %s does not exists in records.", schoolId)))
                 , SchoolDTO.class);
     }
 
     @Override
     public SchoolDTO create(CreateSchoolModel model) {
-        validator.validateAddress(model.getAddress());
-        validator.validateName(model.getName());
-        SchoolDTO school = new SchoolDTO();
+        validateModel(model);
 
-        school.setAddress(model.getAddress());
-        school.setDirector(null);
-        school.setName(model.getName());
-        school.setStudents(new ArrayList<>());
-        school.setTeachers(new ArrayList<>());
+        SchoolDTO school = populateSchool(model);
 
-        repository.save(mapper.map(school, School.class));
+        repository.save(converter.convert(school, School.class));
         return school;
     }
 
+
+
     @Override
     public boolean edit(long id, CreateSchoolModel model) {
-        validator.validateAddress(model.getAddress());
-        validator.validateName(model.getName());
+        validateModel(model);
 
         SchoolDTO school = this.get(id);
 
         school.setAddress(model.getAddress());
         school.setName(model.getName());
 
-        repository.save(mapper.map(school, School.class));
+        repository.save(converter.convert(school, School.class));
         return true;
     }
 
@@ -83,12 +78,12 @@ public class SchoolServiceImpl implements SchoolService {
     public boolean assignDirector(long schoolId, long directorID) {
         SchoolDTO school = this.get(schoolId);
 
-        DirectorDTO director = mapper.map(directorService.findById(directorID)
+        DirectorDTO director = converter.convert(directorService.findById(directorID)
                         .orElseThrow(() -> new NoSuchDataException(String.format("Director %s does not exists in records.", directorID)))
                 , DirectorDTO.class);
 
-        school.setDirector(mapper.map(director, Director.class));
-        repository.save(mapper.map(school, School.class));
+        school.setDirector(converter.convert(director, Director.class));
+        repository.save(converter.convert(school, School.class));
         return true;
     }
 
@@ -98,7 +93,7 @@ public class SchoolServiceImpl implements SchoolService {
 
         school.setDirector(null);
 
-        repository.save(mapper.map(school, School.class));
+        repository.save(converter.convert(school, School.class));
         return true;
     }
 
@@ -107,10 +102,10 @@ public class SchoolServiceImpl implements SchoolService {
         SchoolDTO school = this.get(schoolId);
 
         StudentDTO studentDTO = studentService.get(studentId);
-        studentDTO.setSchool(mapper.map(school,School.class));
+        studentDTO.setSchool(converter.convert(school, School.class));
 
-        school.getStudents().add(mapper.map(studentDTO, Student.class));
-        repository.save(mapper.map(school, School.class));
+        school.getStudents().add(converter.convert(studentDTO, Student.class));
+        repository.save(converter.convert(school, School.class));
         return true;
     }
 
@@ -122,8 +117,8 @@ public class SchoolServiceImpl implements SchoolService {
         StudentDTO studentDTO = studentService.get(studentId);
         studentService.removeSchool(studentDTO.getId());
 
-        boolean result = school.getStudents().remove(mapper.map(studentDTO, Student.class));
-        repository.save(mapper.map(school, School.class));
+        boolean result = school.getStudents().remove(converter.convert(studentDTO, Student.class));
+        repository.save(converter.convert(school, School.class));
         return result;
     }
 
@@ -133,14 +128,13 @@ public class SchoolServiceImpl implements SchoolService {
 
 
         TeacherDTO teacherDTO = teacherService.get(teacherId);
-        teacherDTO.setSchool(mapper.map(school,School.class));
+        teacherDTO.setSchool(converter.convert(school, School.class));
 
 
-        school.getTeachers().add(mapper.map(teacherDTO, Teacher.class));
-        repository.saveAndFlush(mapper.map(school, School.class));
+        school.getTeachers().add(converter.convert(teacherDTO, Teacher.class));
+        repository.saveAndFlush(converter.convert(school, School.class));
         return true;
     }
-
 
 
     @Override
@@ -150,42 +144,10 @@ public class SchoolServiceImpl implements SchoolService {
         TeacherDTO teacherDTO = teacherService.get(teacherId);
         teacherService.removeSchool(teacherDTO.getId());
 
-        boolean result = school.getTeachers().remove(mapper.map(teacherDTO, Teacher.class));
-        repository.saveAndFlush(mapper.map(school, School.class));
+        boolean result = school.getTeachers().remove(converter.convert(teacherDTO, Teacher.class));
+        repository.saveAndFlush(converter.convert(school, School.class));
         return result;
     }
-
-//    @Override
-//    public boolean assignTeacherToCourse(long schoolId, long teacherId, long courseId) {
-//        SchoolDTO school = this.get(schoolId);
-//
-//        List<Set<Course>> setList = school.getTeachers()
-//                .stream()
-//                .map(Teacher::getCourses)
-//                .collect(Collectors.toList());
-//
-//        List<Course> PlainCourses = new ArrayList<>();
-//        setList.forEach(PlainCourses::addAll);
-//        List<CourseDTO>courses = PlainCourses
-//                .stream()
-//                .map(course -> mapper.map(course,CourseDTO.class))
-//                .collect(Collectors.toList());
-//
-////                .flatMap(Collection::stream)
-////                .map(course -> mapper.map(course, CourseDTO.class))
-////                .collect(Collectors.toList());
-//
-//
-//        if (!courses.contains(courseService.get(courseId))) {
-//            throw new NoSuchDataException(String.format("Course %s does not exists in school records.", courseId));
-//        }
-//        TeacherDTO teacherDto = teacherService.get(teacherId);
-//        if (school.getStudents().contains(mapper.map(teacherDto, Student.class))) {
-//            throw new NoSuchDataException(String.format("Teacher %s does not exists in school records.", teacherId));
-//        }
-//
-//        return courseService.assignTeacher(courseId, teacherDto);
-//    }
 
     @Override
     public boolean assignStudentToCourse(long schoolId, long courseID, long studentId) {
@@ -195,7 +157,7 @@ public class SchoolServiceImpl implements SchoolService {
                 .stream()
                 .map(Teacher::getCourses)
                 .flatMap(Collection::stream)
-                .map(course -> mapper.map(course, CourseDTO.class))
+                .map(course -> converter.convert(course, CourseDTO.class))
                 .collect(Collectors.toList());
 
 
@@ -203,7 +165,7 @@ public class SchoolServiceImpl implements SchoolService {
             throw new NoSuchDataException(String.format("Course %s does not exists in school records.", courseID));
         }
         StudentDTO studentDTO = studentService.get(studentId);
-        if (school.getStudents().contains(mapper.map(studentDTO, Student.class))) {
+        if (school.getStudents().contains(converter.convert(studentDTO, Student.class))) {
             throw new NoSuchDataException(String.format("Student %s does not exists in school records.", studentId));
         }
 
@@ -218,7 +180,7 @@ public class SchoolServiceImpl implements SchoolService {
                 .stream()
                 .map(Teacher::getCourses)
                 .flatMap(Collection::stream)
-                .map(course -> mapper.map(course, CourseDTO.class))
+                .map(course -> converter.convert(course, CourseDTO.class))
                 .collect(Collectors.toList());
 
 
@@ -227,7 +189,7 @@ public class SchoolServiceImpl implements SchoolService {
         }
 
         StudentDTO studentDTO = studentService.get(studentId);
-        if (school.getStudents().contains(mapper.map(studentDTO, Student.class))) {
+        if (school.getStudents().contains(converter.convert(studentDTO, Student.class))) {
             throw new NoSuchDataException(String.format("Student %s does not exists in school records.", studentId));
         }
 
@@ -237,12 +199,10 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public Map<String, Double> avgGradeOnStudents(long schoolId) {
-        SchoolDTO school = mapper.map(repository.findById(schoolId).orElse(new School()), SchoolDTO.class);
+        SchoolDTO school = converter.convert(repository.findById(schoolId).orElse(new School()), SchoolDTO.class);
 
-        List<StudentDTO> students = school.getStudents()
-                .stream()
-                .map(student -> mapper.map(student, StudentDTO.class))
-                .collect(Collectors.toList());
+
+        List<StudentDTO> students = converter.convertList(school.getStudents(), StudentDTO.class);
 
         Map<String, Double> studentsAvgGrades = new HashMap<>();
 
@@ -267,5 +227,22 @@ public class SchoolServiceImpl implements SchoolService {
                 .stream()
                 .filter(entry -> entry.getValue() < 4.5)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+
+    private SchoolDTO populateSchool(CreateSchoolModel model) {
+        SchoolDTO school = new SchoolDTO();
+
+        school.setAddress(model.getAddress());
+        school.setDirector(null);
+        school.setName(model.getName());
+        school.setStudents(new ArrayList<>());
+        school.setTeachers(new ArrayList<>());
+        return school;
+    }
+
+    private void validateModel(CreateSchoolModel model) {
+        validator.validateAddress(model.getAddress());
+        validator.validateName(model.getName());
     }
 }

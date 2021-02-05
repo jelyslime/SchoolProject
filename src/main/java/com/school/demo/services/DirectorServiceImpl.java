@@ -1,5 +1,6 @@
 package com.school.demo.services;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.dto.DirectorDTO;
 import com.school.demo.dto.TeacherDTO;
 import com.school.demo.entity.*;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class DirectorServiceImpl implements DirectorService {
 
+    private final GenericConverter converter;
     private final ModelMapper mapper;
     private final DirectorRepository directorRepository;
     private final SchoolService schoolService;
@@ -39,43 +40,26 @@ public class DirectorServiceImpl implements DirectorService {
     @Override
     public DirectorDTO create(CreateDirectorModel model) {
         Role role = Role.DIRECTOR;
-        validator.validateRole(role);
-        validator.validateUsername(model.getUsername());
-        validator.validatePassword(model.getPassword());
+        validateModel(model, role);
 
         DirectorDTO director = new DirectorDTO();
 
-        director.setFirstName(model.getFirstName());
-        director.setLastName(model.getLastName());
-        director.setPassword(model.getPassword());
-        director.setUsername(model.getUsername());
-        director.setRole(role);
-        if (model.getSchool_id() != 0) {
-            director.setSchool(mapper.map(schoolService.get(model.getSchool_id()), School.class));
-        }
+        populateDirector(model, role, director);
 
         directorRepository.save(mapper.map(director, Director.class));
         return director;
     }
 
+
+
     @Override
     public DirectorDTO edit(long id, CreateDirectorModel model) {
-
         Role role = Role.DIRECTOR;
-        validator.validateRole(role);
-        validator.validateUsername(model.getUsername());
-        validator.validatePassword(model.getPassword());
+        validateModel(model, role);
 
         DirectorDTO director = new DirectorDTO();
 
-        director.setFirstName(model.getFirstName());
-        director.setLastName(model.getLastName());
-        director.setPassword(model.getPassword());
-        director.setUsername(model.getUsername());
-        director.setRole(role);
-        if (model.getSchool_id() != 0) {
-            director.setSchool(mapper.map(schoolService.get(model.getSchool_id()), School.class));
-        }
+        populateDirector(model, role, director);
         director.setId(id);
 
         directorRepository.save(mapper.map(director, Director.class));
@@ -97,51 +81,76 @@ public class DirectorServiceImpl implements DirectorService {
     public List<CourseIdAndGradesView> getAllCoursesAndAllGrades(long directorId) {
         DirectorDTO director = this.get(directorId);
 
-        List<TeacherDTO> teacherDTOS = director.getSchool().getTeachers()
-                .stream()
-                .map(x -> convertToDTO(x, TeacherDTO.class))
-                .collect(Collectors.toList());
+        List<TeacherDTO> teacherDTOS = getTeacherDTOS(director);
 
-        List<Set<Course>> setList = teacherDTOS
-                .stream()
-                .map(TeacherDTO::getCourses)
-                .collect(Collectors.toList());
+        List<Set<Course>> setList = getSetOfCourses(teacherDTOS);
 
         List<Course> courses = new ArrayList<>();
         setList.forEach(courses::addAll);
 
-        return courses.stream()
-                .map(x -> mapper.map(x, CourseIdAndGradesView.class))
-                .collect(Collectors.toList());
+        return converter.convertList(courses,CourseIdAndGradesView.class);
     }
+
+
 
     @Override
     public List<TeacherView> getAllTeachers(long directorId) {
         DirectorDTO director = this.get(directorId);
 
-        return director.getSchool().getTeachers()
-                .stream()
-                .map(x -> convertToDTO(x, TeacherView.class))
-                .collect(Collectors.toList());
+        return converter.convertList(director.getSchool().getTeachers(),TeacherView.class);
     }
 
     @Override
     public List<ParentDirectorView> getAllParents(long directorId) {
         DirectorDTO director = this.get(directorId);
 
-        List<Set<Parent>> setOfParents = director.getSchool().getStudents()
-                .stream()
-                .map(Student::getParents)
-                .collect(Collectors.toList());
+        List<Set<Parent>> setOfParents = getSetOfParents(director);
 
         List<Parent> parents = new ArrayList<>();
         setOfParents.forEach(parents::addAll);
 
-        return parents
-                .stream()
-                .map(parent -> convertToDTO(parent, ParentDirectorView.class))
-                .collect(Collectors.toList());
+        return converter.convertList(parents,ParentDirectorView.class);
+    }
 
+    private List<Set<Parent>> getSetOfParents(DirectorDTO director) {
+        List<Set<Parent>> setOfParents = director.getSchool().getStudents()
+                .stream()
+                .map(Student::getParents)
+                .collect(Collectors.toList());
+        return setOfParents;
+    }
+
+    private void populateDirector(CreateDirectorModel model, Role role, DirectorDTO director) {
+        director.setFirstName(model.getFirstName());
+        director.setLastName(model.getLastName());
+        director.setPassword(model.getPassword());
+        director.setUsername(model.getUsername());
+        director.setRole(role);
+        if (model.getSchool_id() != 0) {
+            director.setSchool(mapper.map(schoolService.get(model.getSchool_id()), School.class));
+        }
+    }
+
+    private void validateModel(CreateDirectorModel model, Role role) {
+        validator.validateRole(role);
+        validator.validateUsername(model.getUsername());
+        validator.validatePassword(model.getPassword());
+    }
+
+    private List<Set<Course>> getSetOfCourses(List<TeacherDTO> teacherDTOS) {
+        //using .flatmap in stream brakes the whole container
+        List<Set<Course>> setList = teacherDTOS
+                .stream()
+                .map(TeacherDTO::getCourses)
+                .collect(Collectors.toList());
+        return setList;
+    }
+
+    private List<TeacherDTO> getTeacherDTOS(DirectorDTO director) {
+        return  director.getSchool().getTeachers()
+                .stream()
+                .map(x -> convertToDTO(x, TeacherDTO.class))
+                .collect(Collectors.toList());
     }
 
     private <T, S> S convertToDTO(T toBeConverted, Class<S> type) {

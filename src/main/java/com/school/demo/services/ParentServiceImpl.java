@@ -1,5 +1,6 @@
 package com.school.demo.services;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.dto.ParentDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.entity.Parent;
@@ -15,12 +16,15 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
 public class ParentServiceImpl implements ParentService {
+    private final GenericConverter converter;
     private final ParentRepository repository;
     private final ModelMapper mapper;
     private final StudentServiceImpl service;
@@ -28,7 +32,7 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     public ParentDTO get(long parentId) {
-        return mapper.map(repository.findById(parentId)
+        return converter.convert(repository.findById(parentId)
                         .orElseThrow(() -> new NoSuchDataException(String.format("Parent %s does not exists in records.", parentId)))
                 ,ParentDTO.class);
     }
@@ -36,43 +40,30 @@ public class ParentServiceImpl implements ParentService {
     @Override
     public ParentDTO create(CreatePersonModel model) {
         Role role = Role.PARENT;
-        validator.validateRole(role);
-        validator.validateUsername(model.getUsername());
-        validator.validatePassword(model.getPassword());
+        validateModel(model, role);
 
-        ParentDTO parent = new ParentDTO();
-
-        parent.setFirstName(model.getFirstName());
-        parent.setLastName(model.getLastName());
-        parent.setPassword(model.getPassword());
-        parent.setUsername(model.getUsername());
+        ParentDTO parent = populateParentDTO(model);
         parent.setKids(new HashSet<>());
         parent.setRole(role);
 
-        repository.save(mapper.map(parent, Parent.class));
+        repository.save(converter.convert(parent, Parent.class));
         return parent;
     }
+
 
     @Override
     public ParentDTO edit(long id, CreatePersonModel model) {
         Role role = Role.PARENT;
-        validator.validateRole(role);
-        validator.validateUsername(model.getUsername());
-        validator.validatePassword(model.getPassword());
+        validateModel(model, role);
 
-        ParentDTO parent = new ParentDTO();
-
-        parent.setFirstName(model.getFirstName());
-        parent.setLastName(model.getLastName());
-        parent.setPassword(model.getPassword());
-        parent.setUsername(model.getUsername());
+        ParentDTO parent = populateParentDTO(model);
         parent.setRole(role);
-
         parent.setId(id);
 
-        repository.save(mapper.map(parent, Parent.class));
+        repository.save(converter.convert(parent, Parent.class));
         return parent;
     }
+
 
     @Override
     public boolean delete(long id) {
@@ -89,14 +80,14 @@ public class ParentServiceImpl implements ParentService {
     public boolean addChild(long parentId, long StudentId) {
         ParentDTO parent = this.get(parentId);
         StudentDTO student = service.get(StudentId);
-        System.out.println("kidsss added to blet blet " + parent.getKids().size());
-        parent.getKids().add(mapper.map(student, Student.class));
-        System.out.println("kidsss added to blet blet " + parent.getKids().size());
 
-        Parent ent = mapper.map(parent,Parent.class);
-        System.out.println("kidsss added to blet blet " + ent.getKids().size());
+        parent.getKids().add(converter.convert(student, Student.class));
 
-        ent.getKids().add(mapper.map(student,Student.class));
+
+        Parent ent = converter.convert(parent,Parent.class);
+
+
+        ent.getKids().add(converter.convert(student,Student.class));
 
        repository.saveAndFlush(ent);
         return true;
@@ -107,8 +98,8 @@ public class ParentServiceImpl implements ParentService {
         ParentDTO parent = this.get(parentId);
         StudentDTO student = service.get(StudentId);
 
-        boolean result = parent.getKids().remove(mapper.map(student, Student.class));
-        repository.save(mapper.map(parent, Parent.class));
+        boolean result = parent.getKids().remove(converter.convert(student, Student.class));
+        repository.save(converter.convert(parent, Parent.class));
         return result;
     }
 
@@ -116,16 +107,13 @@ public class ParentServiceImpl implements ParentService {
     public Map<String, List<CourseIdAndGradesView>> getAllGrades(long parentId) {
         ParentDTO parentDTO = this.get(parentId);
 
-
-        List<StudentDTO> kids = parentDTO.getKids()
-                .stream()
-                .map(student -> mapper.map(student, StudentDTO.class))
-                .collect(Collectors.toList());
+        List<StudentDTO> kids = converter.convertList(parentDTO.getKids(),StudentDTO.class);
 
         Map<String, List<CourseIdAndGradesView>> kidsGrades = new HashMap<>();
 
         for (StudentDTO kid : kids) {
-            kidsGrades.put(String.format("%s %s", kid.getFirstName(), kid.getLastName()), service.getAllGrades(kid.getId()));
+            kidsGrades.put(String.format("%s %s", kid.getFirstName(), kid.getLastName()),
+                    service.getAllGrades(kid.getId()));
         }
 
         return kidsGrades;
@@ -135,17 +123,31 @@ public class ParentServiceImpl implements ParentService {
     public Map<String, List<TeacherView>> getAllTeachers(long parentId) {
         ParentDTO parentDTO = this.get(parentId);
 
-        List<StudentDTO> kids = parentDTO.getKids()
-                .stream()
-                .map(student -> mapper.map(student, StudentDTO.class))
-                .collect(Collectors.toList());
+        List<StudentDTO> kids = converter.convertList(parentDTO.getKids(),StudentDTO.class);
 
         Map<String, List<TeacherView>> kidsGrades = new HashMap<>();
 
         for (StudentDTO kid : kids) {
-            kidsGrades.put(String.format("%s %s", kid.getFirstName(), kid.getLastName()), service.getAllTeachers(kid.getId()));
+            kidsGrades.put(String.format("%s %s", kid.getFirstName(), kid.getLastName()),
+                    service.getAllTeachers(kid.getId()));
         }
 
         return kidsGrades;
+    }
+
+    private ParentDTO populateParentDTO(CreatePersonModel model) {
+        ParentDTO parent = new ParentDTO();
+
+        parent.setFirstName(model.getFirstName());
+        parent.setLastName(model.getLastName());
+        parent.setPassword(model.getPassword());
+        parent.setUsername(model.getUsername());
+        return parent;
+    }
+
+    private void validateModel(CreatePersonModel model, Role role) {
+        validator.validateRole(role);
+        validator.validateUsername(model.getUsername());
+        validator.validatePassword(model.getPassword());
     }
 }
