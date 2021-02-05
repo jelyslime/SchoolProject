@@ -19,7 +19,7 @@ public interface StudentService {
 
     boolean delete(long id);
 
-    public boolean removeSchool(long id);
+    boolean removeSchool(long id);
 
     List<CourseIdAndGradesView> getAllGrades(long studentId);
 

@@ -1,13 +1,14 @@
-package com.school.demo.services;
+package com.school.demo.services.implementations;
 
 import com.school.demo.converter.GenericConverter;
+import com.school.demo.data.entity.*;
+import com.school.demo.data.repository.StudentRepository;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
 import com.school.demo.dto.StudentDTO;
-import com.school.demo.entity.*;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreatePersonModel;
-import com.school.demo.repository.StudentRepository;
+import com.school.demo.services.StudentService;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.SimpleGradeView;
@@ -90,9 +91,9 @@ public class StudentServiceImpl implements StudentService {
     public List<CourseIdAndGradesView> getAllGrades(long studentId) {
         StudentDTO student = this.get(studentId);
 
-        Set<GradeDTO> grades = converter.convertSet(student.getGrades(),GradeDTO.class);
+        Set<GradeDTO> grades = converter.convertSet(student.getGrades(), GradeDTO.class);
 
-        Set<CourseDTO> courseDTOS = converter.convertSet(student.getCourses(),CourseDTO.class);
+        Set<CourseDTO> courseDTOS = converter.convertSet(student.getCourses(), CourseDTO.class);
 
         return getCourseIdAndGradesViews(grades, courseDTOS);
     }

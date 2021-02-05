@@ -1,7 +1,7 @@
 package com.school.demo.controllers;
 
 import com.school.demo.models.CreatePersonModel;
-import com.school.demo.services.TeacherServiceImpl;
+import com.school.demo.services.implementations.TeacherServiceImpl;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
 import com.school.demo.views.TeacherView;

@@ -1,7 +1,7 @@
 package com.school.demo.controllers;
 
 import com.school.demo.models.CreatePersonModel;
-import com.school.demo.services.ParentServiceImpl;
+import com.school.demo.services.implementations.ParentServiceImpl;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;

@@ -1,14 +1,15 @@
-package com.school.demo.services;
+package com.school.demo.services.implementations;
 
 import com.school.demo.converter.GenericConverter;
+import com.school.demo.data.entity.Parent;
+import com.school.demo.data.entity.Role;
+import com.school.demo.data.entity.Student;
+import com.school.demo.data.repository.ParentRepository;
 import com.school.demo.dto.ParentDTO;
 import com.school.demo.dto.StudentDTO;
-import com.school.demo.entity.Parent;
-import com.school.demo.entity.Role;
-import com.school.demo.entity.Student;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreatePersonModel;
-import com.school.demo.repository.ParentRepository;
+import com.school.demo.services.ParentService;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.TeacherView;
@@ -25,9 +26,11 @@ import java.util.Map;
 public class ParentServiceImpl implements ParentService {
 
     private final GenericConverter converter;
-    private final ParentRepository repository;
-    private final StudentServiceImpl service;
     private final Validator validator;
+
+    private final StudentServiceImpl service;
+
+    private final ParentRepository repository;
 
     @Override
     public ParentDTO get(long parentId) {

@@ -1,4 +1,4 @@
-package com.school.demo.entity;
+package com.school.demo.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;

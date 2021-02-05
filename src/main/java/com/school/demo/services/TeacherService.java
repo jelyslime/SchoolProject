@@ -1,10 +1,8 @@
 package com.school.demo.services;
 
 
-import com.school.demo.dto.StudentDTO;
+import com.school.demo.data.entity.Grade;
 import com.school.demo.dto.TeacherDTO;
-import com.school.demo.entity.Grade;
-import com.school.demo.entity.Teacher;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
@@ -29,7 +27,7 @@ public interface TeacherService {
 //    boolean assignSchool(long teacherId,long schoolId);
 
 
-    public boolean removeSchool(long id);
+    boolean removeSchool(long id);
 
 
     Grade addGrade(long id, long course_id, double grade, long student_id);

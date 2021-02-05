@@ -1,6 +1,6 @@
-package com.school.demo.repository;
+package com.school.demo.data.repository;
 
-import com.school.demo.entity.Teacher;
+import com.school.demo.data.entity.Teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

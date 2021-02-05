@@ -1,18 +1,19 @@
-package com.school.demo.services;
+package com.school.demo.services.implementations;
 
 import com.school.demo.converter.GenericConverter;
+import com.school.demo.data.entity.*;
+import com.school.demo.data.repository.DirectorRepository;
 import com.school.demo.dto.DirectorDTO;
 import com.school.demo.dto.TeacherDTO;
-import com.school.demo.entity.*;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreateDirectorModel;
-import com.school.demo.repository.DirectorRepository;
+import com.school.demo.services.DirectorService;
+import com.school.demo.services.SchoolService;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.ParentDirectorView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,10 +26,12 @@ import java.util.stream.Collectors;
 public class DirectorServiceImpl implements DirectorService {
 
     private final GenericConverter converter;
-    private final ModelMapper mapper;
-    private final DirectorRepository directorRepository;
-    private final SchoolService schoolService;
     private final Validator validator;
+
+    private final SchoolService schoolService;
+
+    private final DirectorRepository directorRepository;
+
 
     @Override
     public DirectorDTO get(long directorId) {
@@ -46,7 +49,7 @@ public class DirectorServiceImpl implements DirectorService {
 
         populateDirector(model, role, director);
 
-        directorRepository.save(mapper.map(director, Director.class));
+        directorRepository.save(converter.convert(director, Director.class));
         return director;
     }
 
@@ -61,7 +64,7 @@ public class DirectorServiceImpl implements DirectorService {
         populateDirector(model, role, director);
         director.setId(id);
 
-        directorRepository.save(mapper.map(director, Director.class));
+        directorRepository.save(converter.convert(director, Director.class));
         return director;
     }
 
@@ -125,7 +128,7 @@ public class DirectorServiceImpl implements DirectorService {
         director.setUsername(model.getUsername());
         director.setRole(role);
         if (model.getSchool_id() != 0) {
-            director.setSchool(mapper.map(schoolService.get(model.getSchool_id()), School.class));
+            director.setSchool(converter.convert(schoolService.get(model.getSchool_id()), School.class));
         }
     }
 

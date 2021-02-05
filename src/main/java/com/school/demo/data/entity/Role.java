@@ -1,4 +1,4 @@
-package com.school.demo.entity;
+package com.school.demo.data.entity;
 
 /**
  * Date: 1/28/2021 Time: 2:41 PM

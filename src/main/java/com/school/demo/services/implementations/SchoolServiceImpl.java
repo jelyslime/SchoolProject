@@ -1,15 +1,17 @@
-package com.school.demo.services;
+package com.school.demo.services.implementations;
 
 import com.school.demo.converter.GenericConverter;
+import com.school.demo.data.entity.Director;
+import com.school.demo.data.entity.School;
+import com.school.demo.data.entity.Student;
+import com.school.demo.data.entity.Teacher;
+import com.school.demo.data.repository.DirectorRepository;
+import com.school.demo.data.repository.SchoolRepository;
 import com.school.demo.dto.*;
-import com.school.demo.entity.Director;
-import com.school.demo.entity.School;
-import com.school.demo.entity.Student;
-import com.school.demo.entity.Teacher;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreateSchoolModel;
-import com.school.demo.repository.DirectorRepository;
-import com.school.demo.repository.SchoolRepository;
+import com.school.demo.services.SchoolService;
+import com.school.demo.services.TeacherService;
 import com.school.demo.validator.Validator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,14 +24,15 @@ import java.util.stream.Collectors;
 public class SchoolServiceImpl implements SchoolService {
 
     private final GenericConverter converter;
-    private final SchoolRepository repository;
+    private final Validator validator;
 
     private final StudentServiceImpl service;
-    private final DirectorRepository directorService;
     private final StudentServiceImpl studentService;
     private final TeacherService teacherService;
     private final CourseServiceImpl courseService;
-    private final Validator validator;
+
+    private final DirectorRepository directorService;
+    private final SchoolRepository repository;
 
     @Override
     public SchoolDTO get(long schoolId) {
@@ -166,7 +169,6 @@ public class SchoolServiceImpl implements SchoolService {
 
         return courseService.addStudent(courseID, studentDTO);
     }
-
 
 
     @Override

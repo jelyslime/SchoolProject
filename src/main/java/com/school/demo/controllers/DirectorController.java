@@ -1,7 +1,7 @@
 package com.school.demo.controllers;
 
 import com.school.demo.models.CreateDirectorModel;
-import com.school.demo.services.DirectorServiceImpl;
+import com.school.demo.services.implementations.DirectorServiceImpl;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.DirectorView;
 import com.school.demo.views.ParentDirectorView;

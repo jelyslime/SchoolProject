@@ -1,8 +1,8 @@
 package com.school.demo.validator;
 
-import com.school.demo.entity.Role;
+import com.school.demo.data.entity.Role;
 import com.school.demo.exception.InvalidArgumentException;
-import com.school.demo.repository.TeacherRepository;
+import com.school.demo.data.repository.TeacherRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

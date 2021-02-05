@@ -1,7 +1,7 @@
 package com.school.demo.controllers;
 
 import com.school.demo.models.CreateCourseModel;
-import com.school.demo.services.CourseServiceImpl;
+import com.school.demo.services.implementations.CourseServiceImpl;
 import com.school.demo.views.CourseView;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;

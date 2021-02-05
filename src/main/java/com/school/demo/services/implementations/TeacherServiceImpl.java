@@ -1,15 +1,16 @@
-package com.school.demo.services;
+package com.school.demo.services.implementations;
 
 import com.school.demo.converter.GenericConverter;
+import com.school.demo.data.entity.*;
+import com.school.demo.data.repository.GradeRepository;
+import com.school.demo.data.repository.TeacherRepository;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.dto.TeacherDTO;
-import com.school.demo.entity.*;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreatePersonModel;
-import com.school.demo.repository.GradeRepository;
-import com.school.demo.repository.TeacherRepository;
+import com.school.demo.services.TeacherService;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
@@ -25,9 +26,11 @@ import java.util.stream.Collectors;
 public class TeacherServiceImpl implements TeacherService {
 
     private final GenericConverter converter;
+    private final Validator validator;
+
     private final TeacherRepository repository;
     private final GradeRepository gradeRepository;
-    private final Validator validator;
+
 
 
     @Override
@@ -227,7 +230,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     private Map<Student, List<GradeAsValueView>> getStudentAllGradesPerSubject(Course course) {
-       return course.getStudents()
+        return course.getStudents()
                 .stream()
                 .collect(Collectors.toMap(Function.identity(), student -> student.getGrades()
                         .stream()

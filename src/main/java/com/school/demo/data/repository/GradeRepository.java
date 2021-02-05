@@ -1,6 +1,6 @@
-package com.school.demo.repository;
+package com.school.demo.data.repository;
 
-import com.school.demo.entity.Director;
+import com.school.demo.data.entity.Grade;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -10,5 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author Vladislav_Zlatanov
  */
-public interface DirectorRepository extends JpaRepository<Director, Long> {
+public interface GradeRepository extends JpaRepository<Grade, Long> {
 }

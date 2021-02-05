@@ -1,15 +1,16 @@
-package com.school.demo.services;
+package com.school.demo.services.implementations;
 
 import com.school.demo.converter.GenericConverter;
+import com.school.demo.data.entity.Course;
+import com.school.demo.data.entity.Student;
+import com.school.demo.data.entity.Teacher;
+import com.school.demo.data.repository.CourseRepository;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.StudentDTO;
 import com.school.demo.dto.TeacherDTO;
-import com.school.demo.entity.Course;
-import com.school.demo.entity.Student;
-import com.school.demo.entity.Teacher;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreateCourseModel;
-import com.school.demo.repository.CourseRepository;
+import com.school.demo.services.CourseService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +23,11 @@ import java.util.stream.Collectors;
 public class CourseServiceImpl implements CourseService {
 
     private final GenericConverter converter;
-    private final CourseRepository courseRepository;
+
     private final TeacherServiceImpl service;
     private final StudentServiceImpl studentService;
+
+    private final CourseRepository courseRepository;
 
     @Override
     public CourseDTO get(long curseId) {

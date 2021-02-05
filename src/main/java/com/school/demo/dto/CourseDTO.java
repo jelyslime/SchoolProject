@@ -1,8 +1,8 @@
 package com.school.demo.dto;
 
-import com.school.demo.entity.Grade;
-import com.school.demo.entity.Student;
-import com.school.demo.entity.Teacher;
+import com.school.demo.data.entity.Grade;
+import com.school.demo.data.entity.Student;
+import com.school.demo.data.entity.Teacher;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

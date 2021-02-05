@@ -1,6 +1,7 @@
 package com.school.demo.dto;
 
-import com.school.demo.entity.*;
+import com.school.demo.data.entity.*;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

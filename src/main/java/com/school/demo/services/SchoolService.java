@@ -32,7 +32,6 @@ public interface SchoolService {
     boolean removeStudentFromCourse(long schoolID, long courseID, long studentId);
 
 
-
     Map<String, Double> avgGradeOnStudents(long schoolId);
 
     Map<String, Double> avgGradeOnStudentsWhoHaveMoreThenFourPointFive(long schoolId);
