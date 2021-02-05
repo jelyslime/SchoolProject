@@ -57,7 +57,7 @@ public class TeacherController {
         return service.getAllStudentGrades(id);
     }
 
-    @PostMapping("/{id}/course/{course_id}/addGrade/{grade}/toStudent/{student_id}")
+    @PostMapping("/{id}/course/{course_id}/add/grade/{grade}/student/{student_id}")
     ResponseEntity<Void> addGrade(@PathVariable("id") long id, @PathVariable("course_id") long course_id,
                                   @PathVariable("grade") double grade, @PathVariable("student_id") long student_id) {
 
@@ -68,7 +68,7 @@ public class TeacherController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/course/{course_id}/gradeId/{grade_id}/update/{grade}")
+    @PutMapping("/{id}/course/{course_id}/edit/grade/{grade_id}/value/{grade}")
     ResponseEntity<Void> updateGrade(@PathVariable("id") long id, @PathVariable("course_id") long course_id,
                                      @PathVariable("grade_id") long grade_id, @PathVariable("grade") double grade) {
 
@@ -79,7 +79,7 @@ public class TeacherController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}/course/{course_id}/gradeId/{gradeId}/delete")
+    @DeleteMapping("/{id}/course/{course_id}/delete/grade/{gradeId}")
     ResponseEntity<Void> deleteGrade(@PathVariable("id") long id, @PathVariable("course_id") long course_id,
                                      @PathVariable("grade_id") long grade_id) {
 
