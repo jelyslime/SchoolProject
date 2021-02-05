@@ -9,6 +9,7 @@ import com.school.demo.repository.DirectorRepository;
 import com.school.demo.roles;
 import com.school.demo.validator.Validator;
 import com.school.demo.views.CourseIdAndGradesView;
+import com.school.demo.views.DirectorView;
 import com.school.demo.views.ParentDirectorView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,6 +36,8 @@ public class DirectorServiceImpl implements DirectorService {
                 .orElseThrow(() -> new NoSuchDataException(String.format("Director %s does not exists in records.", directorId)))
                 , DirectorDTO.class);
     }
+
+
 
     @Override
     public DirectorDTO create(CreateDirectorModel model) {
@@ -81,6 +83,8 @@ public class DirectorServiceImpl implements DirectorService {
         directorRepository.save(mapper.map(director, Director.class));
         return director;
     }
+
+
 
     @Override
     public boolean delete(long id) {
@@ -142,6 +146,11 @@ public class DirectorServiceImpl implements DirectorService {
                 .map(parent -> convertToDTO(parent, ParentDirectorView.class))
                 .collect(Collectors.toList());
 
+    }
+
+    @Override
+    public DirectorView getByUsername(String username) {
+        return mapper.map(directorRepository.findByUsernameNative(username),DirectorView.class);
     }
 
     private <T, S> S convertToDTO(T toBeConverted, Class<S> type) {

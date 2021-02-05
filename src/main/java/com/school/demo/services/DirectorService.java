@@ -3,6 +3,7 @@ package com.school.demo.services;
 import com.school.demo.dto.DirectorDTO;
 import com.school.demo.models.CreateDirectorModel;
 import com.school.demo.views.CourseIdAndGradesView;
+import com.school.demo.views.DirectorView;
 import com.school.demo.views.ParentDirectorView;
 import com.school.demo.views.TeacherView;
 
@@ -24,5 +25,6 @@ public interface DirectorService {
     //•	As a director I would like to see all parents.
     List<ParentDirectorView> getAllParents(long directorId);
 
+    DirectorView getByUsername(String username );
 
 }

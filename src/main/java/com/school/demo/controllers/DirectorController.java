@@ -27,6 +27,13 @@ public class DirectorController {
         return ResponseEntity.ok().body(mapper.map(service.get(id), DirectorView.class));
     }
 
+
+    //test
+    @GetMapping("/{directorId}/byUsername")
+    public DirectorView getDirectorByUsername(@PathVariable String directorId){
+
+        return service.getByUsername(directorId);
+    }
     //work
     @PostMapping("/create")
     public ResponseEntity<DirectorView> createDirector(@RequestBody CreateDirectorModel model) {

@@ -15,8 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.Objects;
-
 /**
  * Date: 2/4/2021 Time: 5:22 PM
  * <p>
@@ -42,7 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Director user = directorRepository.findByUsername(username);
+        Director user = directorRepository.findByUsernameNative(username);
 
         if (user != null) {
             UserModel model = new UserModel(user.getUsername(),user.getPassword(),true,user.getRole());
