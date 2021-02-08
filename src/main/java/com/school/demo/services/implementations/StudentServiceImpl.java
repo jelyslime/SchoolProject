@@ -17,6 +17,7 @@ import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.SimpleGradeView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class StudentServiceImpl implements StudentService {
 
     private final GenericConverter converter;
@@ -36,6 +38,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO get(long studentId) {
+        log.info("Calling student repository");
         return converter.convert(repository.findById(studentId)
                         .orElseThrow(() ->
                                 new NoSuchDataException(String.format("Student %s does not exists in records.", studentId)))
@@ -44,6 +47,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO create(CreatePersonModel model) {
+        log.debug("Creating new student.");
         Role role = Role.STUDENT;
         validateModel(model, role);
 
@@ -57,6 +61,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO edit(long id, CreatePersonModel model) {
+        log.debug("Editing student " + id);
         Role role = Role.STUDENT;
         validateModel(model, role);
 
@@ -68,6 +73,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public boolean delete(long id) {
+        log.debug("Deleting student " + id);
         boolean result = repository.existsById(id);
         if (!result) {
             return false;
@@ -79,6 +85,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public boolean removeSchool(long id) {
+        log.debug("Removing school " + id);
         StudentDTO studentDTO = this.get(id);
 
         studentDTO.setSchool(null);
@@ -89,6 +96,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<CourseIdAndGradesView> getAllGrades(long studentId) {
+        log.debug("Getting all grades to student " + studentId);
         StudentDTO student = this.get(studentId);
 
         Set<GradeDTO> grades = converter.convertSet(student.getGrades(), GradeDTO.class);
@@ -100,6 +108,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<TeacherView> getAllTeachers(long studentId) {
+        log.debug("Getting all teachers to student " + studentId);
         StudentDTO student = this.get(studentId);
 
         return student.getCourses()
@@ -111,6 +120,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public double getAvgGrade(long studentId) {
+        log.debug("Getting average grade to student " + studentId);
         StudentDTO student = this.get(studentId);
 
         return student.getGrades()
@@ -120,6 +130,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private StudentDTO initialPopulationStudentDTO(CreatePersonModel model) {
+        log.debug("Initial population of student.");
         StudentDTO studentDTO = new StudentDTO();
 
         studentDTO.setCourses(new HashSet<>());
@@ -135,13 +146,14 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private void validateModel(CreatePersonModel model, Role role) {
+        log.debug("Validating model.");
         validator.validateRole(role);
         validator.validateUsername(model.getUsername());
         validator.validatePassword(model.getPassword());
     }
 
     private StudentDTO populateStudentDTO(StudentDTO studentDTO, CreatePersonModel model) {
-
+        log.debug("Populating student with data from model.");
         studentDTO.setFirstName(model.getFirstName());
         studentDTO.setLastName(model.getLastName());
         studentDTO.setUsername(model.getUsername());
@@ -150,6 +162,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private List<CourseIdAndGradesView> getCourseIdAndGradesViews(Set<GradeDTO> grades, Set<CourseDTO> courseDTOS) {
+        log.debug("Getting courses and grades.");
         List<CourseIdAndGradesView> courseIdAndGradesViews = new ArrayList<>();
 
         for (CourseDTO courseDTO : courseDTOS) {

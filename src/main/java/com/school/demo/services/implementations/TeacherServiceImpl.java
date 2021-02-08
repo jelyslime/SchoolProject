@@ -19,6 +19,7 @@ import com.school.demo.validator.Validator;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class TeacherServiceImpl implements TeacherService {
 
     private final GenericConverter converter;
@@ -42,6 +44,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherDTO get(long teacherId) {
+        log.info("Calling teacher repository");
         return converter.convert(repository.findById(teacherId)
                         .orElseThrow(() -> new NoSuchDataException(String.format("Teacher %s does not exists in records.", teacherId)))
                 , TeacherDTO.class);
@@ -49,6 +52,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherDTO create(CreatePersonModel model) {
+        log.debug("Creating new teacher.");
         Role role = Role.TEACHER;
         validateModel(model, role);
 
@@ -62,6 +66,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public TeacherDTO edit(long id, CreatePersonModel model) {
+        log.debug("Editing teacher " + id);
         Role role = Role.TEACHER;
         validateModel(model, role);
 
@@ -76,6 +81,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public boolean delete(long id) {
+        log.debug("Deleting teacher " + id);
         boolean result = repository.existsById(id);
         if (!result) {
             return false;
@@ -88,6 +94,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public Map<Long, Map<PersonNamesView, List<GradeAsValueView>>> getAllStudentGrades(long teacherId) {
+        log.debug("Getting all students and grades");
         TeacherDTO teacher = this.get(teacherId);
 
         Set<Course> courses = teacher.getCourses();
@@ -98,6 +105,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public boolean removeSchool(long id) {
+        log.debug("Removing school.");
         TeacherDTO teacher = this.get(id);
 
         teacher.setSchool(null);
@@ -109,6 +117,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public Grade addGrade(long id, long course_id, double grade, long student_id) {
+        log.debug("Adding grade " + grade + " to student " + student_id + " on course " + course_id);
         validator.validateGrade(grade);
         TeacherDTO teacher = this.get(id);
 
@@ -123,6 +132,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public Grade updateGrade(long id, long course_id, long grade_id, double grade) {
+        log.debug("Updating grade " + grade_id + " on course " + course_id);
         validator.validateGrade(grade);
 
         TeacherDTO teacher = this.get(id);
@@ -138,6 +148,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public void deleteGrade(long id, long course_id, long grade_id) {
+        log.debug("Deleting grade " + grade_id + " on course " + course_id);
         Teacher teacher = repository.findById(id).orElse(new Teacher());
 
         CourseDTO course = getCourseDTO(id, course_id, teacher.getCourses());
@@ -148,6 +159,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     private void populateTeacherDTO(CreatePersonModel model, TeacherDTO teacherDTO) {
+        log.debug("Populating teacher from model.");
         teacherDTO.setFirstName(model.getFirstName());
         teacherDTO.setLastName(model.getLastName());
         teacherDTO.setUsername(model.getUsername());
@@ -155,6 +167,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     private TeacherDTO initialPopulationTeacherDTO(CreatePersonModel model) {
+        log.debug("Initialising population on new teacher.");
         TeacherDTO teacherDTO = new TeacherDTO();
 
         teacherDTO.setCourses(new HashSet<>());
@@ -166,12 +179,14 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     private void validateModel(CreatePersonModel model, Role role) {
+        log.debug("Validating model.");
         validator.validateRole(role);
         validator.validateUsername(model.getUsername());
         validator.validatePassword(model.getPassword());
     }
 
     private GradeDTO getGradeDTO(long course_id, long grade_id, CourseDTO course) {
+        log.debug("Getting specific grade from courses.");
         return converter.convert(course.getGrades()
                         .stream()
                         .filter(x -> x.getId() == grade_id)
@@ -182,6 +197,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     private CourseDTO getCourseDTO(long id, long course_id, Set<Course> courses) {
+        log.debug("Getting courses.");
         return converter.convert(courses
                         .stream()
                         .filter(x -> x.getId() == course_id)
@@ -192,6 +208,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     private StudentDTO getStudentDTO(long course_id, long student_id, CourseDTO course) {
+        log.debug("Getting students.");
         return converter.convert(course.getStudents().stream()
                         .filter(x -> x.getId() == student_id)
                         .findFirst()
@@ -201,6 +218,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     private GradeDTO createNewGradeDTO(double grade, CourseDTO course, StudentDTO student) {
+        log.debug("Creating new grade.");
         GradeDTO grade1 = new GradeDTO();
         grade1.setCourse(converter.convert(course, Course.class));
         grade1.setStudent(converter.convert(student, Student.class));

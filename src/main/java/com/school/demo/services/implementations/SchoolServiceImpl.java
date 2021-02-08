@@ -19,6 +19,7 @@ import com.school.demo.services.SchoolService;
 import com.school.demo.services.TeacherService;
 import com.school.demo.validator.Validator;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class SchoolServiceImpl implements SchoolService {
 
     private final GenericConverter converter;
@@ -45,6 +47,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public SchoolDTO get(long schoolId) {
+        log.info("Calling school repository");
         return converter.convert(repository.findById(schoolId)
                         .orElseThrow(() ->
                                 new NoSuchDataException(String.format("School %s does not exists in records.", schoolId)))
@@ -53,6 +56,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public SchoolDTO create(CreateSchoolModel model) {
+        log.debug("Creating new school.");
         validateModel(model);
 
         SchoolDTO school = populateSchool(new SchoolDTO(), model);
@@ -64,6 +68,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean edit(long id, CreateSchoolModel model) {
+        log.debug("Editing school " + id);
         validateModel(model);
 
         SchoolDTO school = this.get(id);
@@ -77,6 +82,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean delete(long id) {
+        log.debug("Deleting school " + id);
         boolean result = repository.existsById(id);
         if (!result) {
             return false;
@@ -88,6 +94,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean assignDirector(long schoolId, long directorID) {
+        log.debug("Assigning director " + directorID + "to school " + schoolId);
         SchoolDTO school = this.get(schoolId);
 
         DirectorDTO director = converter.convert(directorService.findById(directorID)
@@ -101,6 +108,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean removeDirector(long schoolId) {
+        log.debug("Removing director on school " + schoolId);
         SchoolDTO school = this.get(schoolId);
 
         school.setDirector(null);
@@ -111,6 +119,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean addStudent(long schoolId, long studentId) {
+        log.debug("Adding student " + studentId + " to school " + schoolId);
         SchoolDTO school = this.get(schoolId);
 
         StudentDTO studentDTO = studentService.get(studentId);
@@ -123,6 +132,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean removeStudent(long schoolId, long studentId) {
+        log.debug("Removing student " + schoolId + " from school " + schoolId);
         SchoolDTO school = this.get(schoolId);
 
 
@@ -136,6 +146,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean assignTeacher(long schoolId, long teacherId) {
+        log.debug("Assign teacher " + teacherId + " to school " + schoolId);
         SchoolDTO school = this.get(schoolId);
 
 
@@ -151,6 +162,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean removeTeacher(long schoolId, long teacherId) {
+        log.debug("Removing teacher " + teacherId + " from school " + schoolId);
         SchoolDTO school = this.get(schoolId);
 
         TeacherDTO teacherDTO = teacherService.get(teacherId);
@@ -163,6 +175,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean assignStudentToCourse(long schoolId, long courseID, long studentId) {
+        log.debug("Assign student " + studentId + " to course " + courseID);
         SchoolDTO school = this.get(schoolId);
 
         List<CourseDTO> courses = getCourseDTO(school);
@@ -182,6 +195,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public boolean removeStudentFromCourse(long schoolId, long courseID, long studentId) {
+        log.debug("Removing student " + studentId + " to course " + courseID);
         SchoolDTO school = this.get(schoolId);
 
         List<CourseDTO> courses = getCourseDTO(school);
@@ -202,6 +216,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public Map<String, Double> avgGradeOnStudents(long schoolId) {
+        log.debug("Getting average grade per student for school " + schoolId);
         SchoolDTO school = this.get(schoolId);
 
         List<StudentDTO> students = converter.convertList(school.getStudents(), StudentDTO.class);
@@ -218,6 +233,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public Map<String, Double> avgGradeOnStudentsWhoHaveMoreThenFourPointFive(long schoolId) {
+        log.debug("Getting filtered average grade per student for school " + schoolId);
         return this.avgGradeOnStudents(schoolId).entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() > 4.5)
@@ -225,6 +241,7 @@ public class SchoolServiceImpl implements SchoolService {
     }
 
     public Map<String, Double> avgGradeOnStudentsWhoHaveLessThenFourPointFive(long schoolId) {
+        log.debug("Getting filtered average grade per student for school " + schoolId);
         return this.avgGradeOnStudents(schoolId).entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() < 4.5)

@@ -12,6 +12,7 @@ import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreateCourseModel;
 import com.school.demo.services.CourseService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CourseServiceImpl implements CourseService {
 
     private final GenericConverter converter;
@@ -31,6 +33,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO get(long curseId) {
+        log.info("Calling course repository");
         return converter.convert(courseRepository.findById(curseId)
                         .orElseThrow(() -> new NoSuchDataException(String.format("Curse %s does not exists in records.", curseId)))
                 , CourseDTO.class);
@@ -38,6 +41,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO create(CreateCourseModel model) {
+        log.debug("Creating new course");
         CourseDTO course = populateCourse(new CourseDTO(), model);
 
         Course entity = converter.convert(course, Course.class);
@@ -61,6 +65,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean delete(long id) {
+        log.debug("Deleting course.");
         boolean result = courseRepository.existsById(id);
         if (!result) {
             return false;
@@ -72,6 +77,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean assignTeacher(long courseId, TeacherDTO teacher) {
+        log.debug("Assigning teacher to course : " + courseId);
         CourseDTO courseDTO = this.get(courseId);
 
         courseDTO.setTeacher(converter.convert(teacher, Teacher.class));
@@ -83,6 +89,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean assignTeacher(long courseId, long teacherId) {
+        log.debug("Assigning teacher to course : " + courseId);
         TeacherDTO teacher = service.get(teacherId);
         CourseDTO course = this.get(courseId);
 
@@ -94,6 +101,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean addStudent(long courseId, StudentDTO student) {
+        log.debug("Assigning student to course : " + courseId);
         CourseDTO courseDTO = this.get(courseId);
 
 
@@ -106,12 +114,14 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean addStudent(long courseId, long studentId) {
+        log.debug("Assigning student "+ studentId+" to course : " + courseId);
         return this.addStudent(courseId, studentService.get(studentId));
     }
 
 
     @Override
     public boolean removeStudent(long courseId, StudentDTO student) {
+        log.debug("Assigning student "+ student.getId()+" to course : " + courseId);
         CourseDTO courseDTO = this.get(courseId);
 
         Set<Student> studentSet = courseDTO.getStudents().stream()
@@ -127,11 +137,12 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean removeStudent(long courseId, long studentId) {
+        log.debug("Assigning student "+ studentId+" to course : " + courseId);
         return this.removeStudent(courseId, studentService.get(studentId));
     }
 
     private CourseDTO populateCourse(CourseDTO course, CreateCourseModel model) {
-
+        log.debug("Populating course from model");
         course.setGrades(new HashSet<>());
         course.setStudents(new HashSet<>());
         course.setTeacher(converter.convert(service.get(model.getTeacherId()), Teacher.class));
