@@ -1,5 +1,6 @@
 package com.school.demo.services.implementations;
 
+
 import com.school.demo.converter.GenericConverter;
 import com.school.demo.data.entity.Director;
 import com.school.demo.data.entity.School;
@@ -7,7 +8,11 @@ import com.school.demo.data.entity.Student;
 import com.school.demo.data.entity.Teacher;
 import com.school.demo.data.repository.DirectorRepository;
 import com.school.demo.data.repository.SchoolRepository;
-import com.school.demo.dto.*;
+import com.school.demo.dto.CourseDTO;
+import com.school.demo.dto.DirectorDTO;
+import com.school.demo.dto.SchoolDTO;
+import com.school.demo.dto.StudentDTO;
+import com.school.demo.dto.TeacherDTO;
 import com.school.demo.exception.NoSuchDataException;
 import com.school.demo.models.CreateSchoolModel;
 import com.school.demo.services.SchoolService;
@@ -16,7 +21,11 @@ import com.school.demo.validator.Validator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +55,7 @@ public class SchoolServiceImpl implements SchoolService {
     public SchoolDTO create(CreateSchoolModel model) {
         validateModel(model);
 
-        SchoolDTO school = populateSchool(new SchoolDTO(),model);
+        SchoolDTO school = populateSchool(new SchoolDTO(), model);
 
         repository.save(converter.convert(school, School.class));
         return school;
@@ -231,7 +240,7 @@ public class SchoolServiceImpl implements SchoolService {
                 .collect(Collectors.toList());
     }
 
-    private SchoolDTO populateSchool(SchoolDTO school,CreateSchoolModel model) {
+    private SchoolDTO populateSchool(SchoolDTO school, CreateSchoolModel model) {
 
         school.setAddress(model.getAddress());
         school.setDirector(null);

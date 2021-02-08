@@ -1,7 +1,11 @@
 package com.school.demo.services.implementations;
 
 import com.school.demo.converter.GenericConverter;
-import com.school.demo.data.entity.*;
+import com.school.demo.data.entity.Course;
+import com.school.demo.data.entity.Grade;
+import com.school.demo.data.entity.Role;
+import com.school.demo.data.entity.Student;
+import com.school.demo.data.entity.Teacher;
 import com.school.demo.data.repository.GradeRepository;
 import com.school.demo.data.repository.TeacherRepository;
 import com.school.demo.dto.CourseDTO;
@@ -17,7 +21,11 @@ import com.school.demo.views.PersonNamesView;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,7 +38,6 @@ public class TeacherServiceImpl implements TeacherService {
 
     private final TeacherRepository repository;
     private final GradeRepository gradeRepository;
-
 
 
     @Override

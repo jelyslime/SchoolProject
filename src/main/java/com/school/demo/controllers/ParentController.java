@@ -7,9 +7,15 @@ import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.ParentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -23,21 +29,21 @@ public class ParentController {
 
     @GetMapping("/{parentId}")
     public ResponseEntity<ParentView> getParent(@PathVariable("parentId") long id) {
-        ParentView view = converter.convert(service.get(id),ParentView.class);
+        ParentView view = converter.convert(service.get(id), ParentView.class);
 
         return ResponseEntity.ok().body(view);
     }
 
     @PostMapping("/create")
     public ResponseEntity<ParentView> createParent(@RequestBody CreatePersonModel model) {
-        ParentView view = converter.convert(service.create(model),ParentView.class);
+        ParentView view = converter.convert(service.create(model), ParentView.class);
 
         return ResponseEntity.ok().body(view);
     }
 
     @PutMapping("/{parentId}/edit")
     public ResponseEntity<ParentView> editParent(@PathVariable("parentId") long id, @RequestBody CreatePersonModel model) {
-        ParentView view = converter.convert(service.edit(id, model),ParentView.class);
+        ParentView view = converter.convert(service.edit(id, model), ParentView.class);
 
         return ResponseEntity.ok().body(view);
     }

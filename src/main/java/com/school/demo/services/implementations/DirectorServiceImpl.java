@@ -1,7 +1,12 @@
 package com.school.demo.services.implementations;
 
 import com.school.demo.converter.GenericConverter;
-import com.school.demo.data.entity.*;
+import com.school.demo.data.entity.Course;
+import com.school.demo.data.entity.Director;
+import com.school.demo.data.entity.Parent;
+import com.school.demo.data.entity.Role;
+import com.school.demo.data.entity.School;
+import com.school.demo.data.entity.Student;
 import com.school.demo.data.repository.DirectorRepository;
 import com.school.demo.dto.DirectorDTO;
 import com.school.demo.dto.TeacherDTO;

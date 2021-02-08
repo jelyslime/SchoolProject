@@ -1,7 +1,10 @@
 package com.school.demo.services.implementations;
 
 import com.school.demo.converter.GenericConverter;
-import com.school.demo.data.entity.*;
+import com.school.demo.data.entity.Course;
+import com.school.demo.data.entity.Grade;
+import com.school.demo.data.entity.Role;
+import com.school.demo.data.entity.Student;
 import com.school.demo.data.repository.StudentRepository;
 import com.school.demo.dto.CourseDTO;
 import com.school.demo.dto.GradeDTO;
@@ -57,7 +60,7 @@ public class StudentServiceImpl implements StudentService {
         Role role = Role.STUDENT;
         validateModel(model, role);
 
-        StudentDTO studentDTO = populateStudentDTO(this.get(id),model);
+        StudentDTO studentDTO = populateStudentDTO(this.get(id), model);
 
         Student entity = converter.convert(studentDTO, Student.class);
         return converter.convert(repository.save(entity), StudentDTO.class);
@@ -137,7 +140,7 @@ public class StudentServiceImpl implements StudentService {
         validator.validatePassword(model.getPassword());
     }
 
-    private StudentDTO populateStudentDTO(StudentDTO studentDTO,CreatePersonModel model) {
+    private StudentDTO populateStudentDTO(StudentDTO studentDTO, CreatePersonModel model) {
 
         studentDTO.setFirstName(model.getFirstName());
         studentDTO.setLastName(model.getLastName());

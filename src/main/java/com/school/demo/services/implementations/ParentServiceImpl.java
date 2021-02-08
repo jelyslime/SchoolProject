@@ -44,7 +44,7 @@ public class ParentServiceImpl implements ParentService {
         Role role = Role.PARENT;
         validateModel(model, role);
 
-        ParentDTO parent = populateParentDTO(new ParentDTO(),model);
+        ParentDTO parent = populateParentDTO(new ParentDTO(), model);
         parent.setKids(new HashSet<>());
         parent.setRole(role);
 
@@ -58,7 +58,7 @@ public class ParentServiceImpl implements ParentService {
         Role role = Role.PARENT;
         validateModel(model, role);
 
-        ParentDTO parent = populateParentDTO(this.get(id),model);
+        ParentDTO parent = populateParentDTO(this.get(id), model);
 
         repository.save(converter.convert(parent, Parent.class));
         return parent;
@@ -135,7 +135,7 @@ public class ParentServiceImpl implements ParentService {
         return kidsGrades;
     }
 
-    private ParentDTO populateParentDTO(ParentDTO parent,CreatePersonModel model) {
+    private ParentDTO populateParentDTO(ParentDTO parent, CreatePersonModel model) {
 
 
         parent.setFirstName(model.getFirstName());

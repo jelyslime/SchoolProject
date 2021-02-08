@@ -6,12 +6,17 @@ import com.school.demo.services.implementations.TeacherServiceImpl;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.GradeView;
 import com.school.demo.views.PersonNamesView;
-import com.school.demo.views.StudentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
@@ -21,13 +26,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class TeacherController {
 
-    private final ModelMapper mapper;
     private final TeacherServiceImpl service;
     private final GenericConverter converter;
+
     //work
     @GetMapping("/{teacherId}")
     public ResponseEntity<TeacherView> getTeacher(@PathVariable("teacherId") long id) {
-        TeacherView view = converter.convert(service.get(id),TeacherView.class);
+        TeacherView view = converter.convert(service.get(id), TeacherView.class);
 
         return ResponseEntity.ok().body(view);
     }
@@ -35,7 +40,7 @@ public class TeacherController {
     //work
     @PostMapping("/create")
     public ResponseEntity<TeacherView> createTeacher(@RequestBody CreatePersonModel model) {
-        TeacherView view = converter.convert(service.create(model),TeacherView.class);
+        TeacherView view = converter.convert(service.create(model), TeacherView.class);
 
         return ResponseEntity.ok().body(view);
     }
@@ -43,7 +48,7 @@ public class TeacherController {
     //work
     @PutMapping("/{teacherId}/edit")
     public ResponseEntity<TeacherView> editTeacher(@PathVariable("teacherId") long id, @RequestBody CreatePersonModel model) {
-        TeacherView view = converter.convert(service.edit(id, model),TeacherView.class);
+        TeacherView view = converter.convert(service.edit(id, model), TeacherView.class);
 
         return ResponseEntity.ok().body(view);
     }
@@ -69,17 +74,17 @@ public class TeacherController {
                                        @PathVariable("grade") double grade, @PathVariable("student_id") long student_id) {
 
 
-        GradeView view = converter.convert(service.addGrade(id, course_id, grade, student_id),GradeView.class);
+        GradeView view = converter.convert(service.addGrade(id, course_id, grade, student_id), GradeView.class);
 
         return ResponseEntity.ok().body(view);
     }
 
     @PutMapping("/{id}/course/{course_id}/edit/grade/{grade_id}/value/{grade}")
     ResponseEntity<GradeView> updateGrade(@PathVariable("id") long id, @PathVariable("course_id") long course_id,
-                                     @PathVariable("grade_id") long grade_id, @PathVariable("grade") double grade) {
+                                          @PathVariable("grade_id") long grade_id, @PathVariable("grade") double grade) {
 
 
-        GradeView view = converter.convert(service.updateGrade(id, course_id, grade_id, grade),GradeView.class);
+        GradeView view = converter.convert(service.updateGrade(id, course_id, grade_id, grade), GradeView.class);
 
 
         return ResponseEntity.ok().body(view);

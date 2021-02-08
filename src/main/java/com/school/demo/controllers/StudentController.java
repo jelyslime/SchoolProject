@@ -4,13 +4,18 @@ import com.school.demo.converter.GenericConverter;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.services.StudentService;
 import com.school.demo.views.CourseIdAndGradesView;
-import com.school.demo.views.SchoolView;
 import com.school.demo.views.StudentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -25,7 +30,7 @@ public class StudentController {
     //work
     @GetMapping("/{studentId}")
     public ResponseEntity<StudentView> getStudent(@PathVariable("studentId") long id) {
-        StudentView view = converter.convert(service.get(id),StudentView.class);
+        StudentView view = converter.convert(service.get(id), StudentView.class);
 
         return ResponseEntity.ok().body(view);
     }
@@ -33,7 +38,7 @@ public class StudentController {
     //work
     @PostMapping("/create")
     public ResponseEntity<StudentView> createStudent(@RequestBody CreatePersonModel model) {
-        StudentView view = converter.convert(service.create(model),StudentView.class);
+        StudentView view = converter.convert(service.create(model), StudentView.class);
 
         return ResponseEntity.ok().body(view);
     }
@@ -41,7 +46,7 @@ public class StudentController {
     //work
     @PutMapping("/{studentId}/edit")
     public ResponseEntity<StudentView> editStudent(@PathVariable("studentId") long id, @RequestBody CreatePersonModel model) {
-        StudentView view = converter.convert(service.edit(id, model),StudentView.class);
+        StudentView view = converter.convert(service.edit(id, model), StudentView.class);
 
         return ResponseEntity.ok().body(view);
     }

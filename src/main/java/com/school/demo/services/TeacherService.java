@@ -12,7 +12,7 @@ import java.util.Map;
 
 public interface TeacherService {
 
-    //TODO CREATE CRUD
+
     TeacherDTO get(long teacherId);
 
     TeacherDTO create(CreatePersonModel model);

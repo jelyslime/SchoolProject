@@ -3,12 +3,17 @@ package com.school.demo.controllers;
 import com.school.demo.converter.GenericConverter;
 import com.school.demo.models.CreateSchoolModel;
 import com.school.demo.services.implementations.SchoolServiceImpl;
-import com.school.demo.views.ParentView;
 import com.school.demo.views.SchoolView;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -23,14 +28,14 @@ public class SchoolController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SchoolView> getSchool(@PathVariable long id) {
-        SchoolView view = converter.convert(service.get(id),SchoolView.class);
+        SchoolView view = converter.convert(service.get(id), SchoolView.class);
 
         return ResponseEntity.ok().body(view);
     }
 
     @PostMapping("/create")
     public ResponseEntity<SchoolView> createSchool(@RequestBody CreateSchoolModel model) {
-        SchoolView view = converter.convert(service.create(model),SchoolView.class);
+        SchoolView view = converter.convert(service.create(model), SchoolView.class);
 
         return ResponseEntity.ok().body(view);
     }

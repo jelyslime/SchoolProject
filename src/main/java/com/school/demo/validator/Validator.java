@@ -2,9 +2,7 @@ package com.school.demo.validator;
 
 import com.school.demo.data.entity.Role;
 import com.school.demo.exception.InvalidArgumentException;
-import com.school.demo.data.repository.TeacherRepository;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.io.InvalidObjectException;
@@ -13,8 +11,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Component
 public class Validator {
-    private final ModelMapper mapper;
-    private TeacherRepository teacherRepository;
+
 
     public void validateObjectDoesExist(Object id) throws InvalidObjectException {
         if (id == null) {

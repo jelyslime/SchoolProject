@@ -6,12 +6,17 @@ import com.school.demo.services.implementations.DirectorServiceImpl;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.DirectorView;
 import com.school.demo.views.ParentDirectorView;
-import com.school.demo.views.ParentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -26,7 +31,7 @@ public class DirectorController {
     //work
     @GetMapping("/{directorId}")
     public ResponseEntity<DirectorView> getDirector(@PathVariable("directorId") long id) {
-        DirectorView view = converter.convert(service.get(id),DirectorView.class);
+        DirectorView view = converter.convert(service.get(id), DirectorView.class);
 
         return ResponseEntity.ok().body(view);
     }
@@ -34,7 +39,7 @@ public class DirectorController {
     //work
     @PostMapping("/create")
     public ResponseEntity<DirectorView> createDirector(@RequestBody CreateDirectorModel model) {
-        DirectorView view = converter.convert(service.create(model),DirectorView.class);
+        DirectorView view = converter.convert(service.create(model), DirectorView.class);
 
         return ResponseEntity.ok().body(view);
     }
@@ -42,7 +47,7 @@ public class DirectorController {
     //work
     @PutMapping("/{directorId}/edit")
     public ResponseEntity<DirectorView> editDirector(@PathVariable("directorId") long id, @RequestBody CreateDirectorModel model) {
-        DirectorView view = converter.convert(service.edit(id, model),DirectorView.class);
+        DirectorView view = converter.convert(service.edit(id, model), DirectorView.class);
 
         return ResponseEntity.ok().body(view);
     }
