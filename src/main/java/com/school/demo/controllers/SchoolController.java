@@ -1,7 +1,9 @@
 package com.school.demo.controllers;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.models.CreateSchoolModel;
 import com.school.demo.services.implementations.SchoolServiceImpl;
+import com.school.demo.views.ParentView;
 import com.school.demo.views.SchoolView;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -15,19 +17,22 @@ import java.util.Map;
 @AllArgsConstructor
 public class SchoolController {
 
-
+    private final GenericConverter converter;
     private final SchoolServiceImpl service;
-    private final ModelMapper mapper;
+
 
     @GetMapping("/{id}")
-    public SchoolView getSchool(@PathVariable long id) {
-        return mapper.map(service.get(id), SchoolView.class);
+    public ResponseEntity<SchoolView> getSchool(@PathVariable long id) {
+        SchoolView view = converter.convert(service.get(id),SchoolView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createSchool(@RequestBody CreateSchoolModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<SchoolView> createSchool(@RequestBody CreateSchoolModel model) {
+        SchoolView view = converter.convert(service.create(model),SchoolView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     @PutMapping("/{id}/edit")

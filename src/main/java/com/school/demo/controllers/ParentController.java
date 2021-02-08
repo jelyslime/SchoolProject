@@ -1,8 +1,10 @@
 package com.school.demo.controllers;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.services.implementations.ParentServiceImpl;
 import com.school.demo.views.CourseIdAndGradesView;
+import com.school.demo.views.ParentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,24 +19,27 @@ import java.util.Map;
 @AllArgsConstructor
 public class ParentController {
     private final ParentServiceImpl service;
-    private final ModelMapper mapper;
+    private final GenericConverter converter;
 
     @GetMapping("/{parentId}")
-    public ResponseEntity<Void> getParent(@PathVariable("parentId") long id) {
-        service.get(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ParentView> getParent(@PathVariable("parentId") long id) {
+        ParentView view = converter.convert(service.get(id),ParentView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createParent(@RequestBody CreatePersonModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ParentView> createParent(@RequestBody CreatePersonModel model) {
+        ParentView view = converter.convert(service.create(model),ParentView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     @PutMapping("/{parentId}/edit")
-    public ResponseEntity<Void> editParent(@PathVariable("parentId") long id, @RequestBody CreatePersonModel model) {
-        service.edit(id, model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ParentView> editParent(@PathVariable("parentId") long id, @RequestBody CreatePersonModel model) {
+        ParentView view = converter.convert(service.edit(id, model),ParentView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     @DeleteMapping("/{parentId}/delete")

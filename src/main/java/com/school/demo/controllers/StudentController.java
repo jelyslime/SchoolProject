@@ -1,8 +1,10 @@
 package com.school.demo.controllers;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.services.StudentService;
 import com.school.demo.views.CourseIdAndGradesView;
+import com.school.demo.views.SchoolView;
 import com.school.demo.views.StudentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
@@ -18,26 +20,30 @@ import java.util.List;
 public class StudentController {
 
     private final StudentService service;
-    private final ModelMapper mapper;
+    private final GenericConverter converter;
 
     //work
     @GetMapping("/{studentId}")
-    public StudentView getStudent(@PathVariable("studentId") long id) {
-        return mapper.map(service.get(id), StudentView.class);
+    public ResponseEntity<StudentView> getStudent(@PathVariable("studentId") long id) {
+        StudentView view = converter.convert(service.get(id),StudentView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //work
     @PostMapping("/create")
-    public ResponseEntity<Void> createStudent(@RequestBody CreatePersonModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<StudentView> createStudent(@RequestBody CreatePersonModel model) {
+        StudentView view = converter.convert(service.create(model),StudentView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //work
     @PutMapping("/{studentId}/edit")
-    public ResponseEntity<Void> editStudent(@PathVariable("studentId") long id, @RequestBody CreatePersonModel model) {
-        service.edit(id, model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<StudentView> editStudent(@PathVariable("studentId") long id, @RequestBody CreatePersonModel model) {
+        StudentView view = converter.convert(service.edit(id, model),StudentView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //work

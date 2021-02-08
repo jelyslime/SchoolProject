@@ -1,8 +1,10 @@
 package com.school.demo.controllers;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.models.CreateCourseModel;
 import com.school.demo.services.implementations.CourseServiceImpl;
 import com.school.demo.views.CourseView;
+import com.school.demo.views.DirectorView;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -16,17 +18,22 @@ public class CourseController {
     private final ModelMapper mapper;
     CourseServiceImpl service;
 
+    private final GenericConverter converter;
+
     //works
     @GetMapping("/{courseId}")
-    public CourseView getCourse(@PathVariable("courseId") long id) {
-        return mapper.map(service.get(id), CourseView.class);
+    public ResponseEntity<CourseView> getCourse(@PathVariable("courseId") long id) {
+        CourseView view = converter.convert(service.get(id),CourseView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //works
     @PostMapping("/create")
-    public ResponseEntity<Void> createCourse(@RequestBody CreateCourseModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CourseView> createCourse(@RequestBody CreateCourseModel model) {
+        CourseView view = converter.convert(service.create(model),CourseView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //work

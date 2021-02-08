@@ -1,10 +1,12 @@
 package com.school.demo.controllers;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.models.CreateDirectorModel;
 import com.school.demo.services.implementations.DirectorServiceImpl;
 import com.school.demo.views.CourseIdAndGradesView;
 import com.school.demo.views.DirectorView;
 import com.school.demo.views.ParentDirectorView;
+import com.school.demo.views.ParentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -18,27 +20,31 @@ import java.util.List;
 @AllArgsConstructor
 public class DirectorController {
 
-    private final ModelMapper mapper;
-    DirectorServiceImpl service;
+    private final DirectorServiceImpl service;
+    private final GenericConverter converter;
 
     //work
     @GetMapping("/{directorId}")
-    public DirectorView getDirector(@PathVariable("directorId") long id) {
-        return mapper.map(service.get(id), DirectorView.class);
+    public ResponseEntity<DirectorView> getDirector(@PathVariable("directorId") long id) {
+        DirectorView view = converter.convert(service.get(id),DirectorView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //work
     @PostMapping("/create")
-    public ResponseEntity<Void> createDirector(@RequestBody CreateDirectorModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<DirectorView> createDirector(@RequestBody CreateDirectorModel model) {
+        DirectorView view = converter.convert(service.create(model),DirectorView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //work
     @PutMapping("/{directorId}/edit")
-    public ResponseEntity<Void> editDirector(@PathVariable("directorId") long id, @RequestBody CreateDirectorModel model) {
-        service.edit(id, model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<DirectorView> editDirector(@PathVariable("directorId") long id, @RequestBody CreateDirectorModel model) {
+        DirectorView view = converter.convert(service.edit(id, model),DirectorView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //work

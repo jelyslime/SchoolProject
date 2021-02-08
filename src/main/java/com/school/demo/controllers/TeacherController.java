@@ -1,9 +1,11 @@
 package com.school.demo.controllers;
 
+import com.school.demo.converter.GenericConverter;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.services.implementations.TeacherServiceImpl;
 import com.school.demo.views.GradeAsValueView;
 import com.school.demo.views.PersonNamesView;
+import com.school.demo.views.StudentView;
 import com.school.demo.views.TeacherView;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -19,26 +21,30 @@ import java.util.Map;
 public class TeacherController {
 
     private final ModelMapper mapper;
-    TeacherServiceImpl service;
-
+    private final TeacherServiceImpl service;
+    private final GenericConverter converter;
     //work
     @GetMapping("/{teacherId}")
-    public TeacherView getTeacher(@PathVariable("teacherId") long id) {
-        return mapper.map(service.get(id), TeacherView.class);
+    public ResponseEntity<TeacherView> getTeacher(@PathVariable("teacherId") long id) {
+        TeacherView view = converter.convert(service.get(id),TeacherView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //work
     @PostMapping("/create")
-    public ResponseEntity<Void> createTeacher(@RequestBody CreatePersonModel model) {
-        service.create(model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TeacherView> createTeacher(@RequestBody CreatePersonModel model) {
+        TeacherView view = converter.convert(service.create(model),TeacherView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //work
     @PutMapping("/{teacherId}/edit")
-    public ResponseEntity<Void> editTeacher(@PathVariable("teacherId") long id, @RequestBody CreatePersonModel model) {
-        service.edit(id, model);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TeacherView> editTeacher(@PathVariable("teacherId") long id, @RequestBody CreatePersonModel model) {
+        TeacherView view = converter.convert(service.edit(id, model),TeacherView.class);
+
+        return ResponseEntity.ok().body(view);
     }
 
     //work
