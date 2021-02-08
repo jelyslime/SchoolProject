@@ -114,14 +114,14 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean addStudent(long courseId, long studentId) {
-        log.debug("Assigning student "+ studentId+" to course : " + courseId);
+        log.debug("Assigning student " + studentId + " to course : " + courseId);
         return this.addStudent(courseId, studentService.get(studentId));
     }
 
 
     @Override
     public boolean removeStudent(long courseId, StudentDTO student) {
-        log.debug("Assigning student "+ student.getId()+" to course : " + courseId);
+        log.debug("Assigning student " + student.getId() + " to course : " + courseId);
         CourseDTO courseDTO = this.get(courseId);
 
         Set<Student> studentSet = courseDTO.getStudents().stream()
@@ -137,7 +137,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public boolean removeStudent(long courseId, long studentId) {
-        log.debug("Assigning student "+ studentId+" to course : " + courseId);
+        log.debug("Assigning student " + studentId + " to course : " + courseId);
         return this.removeStudent(courseId, studentService.get(studentId));
     }
 

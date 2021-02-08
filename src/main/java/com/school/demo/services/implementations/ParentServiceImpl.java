@@ -113,7 +113,7 @@ public class ParentServiceImpl implements ParentService {
 
     @Override
     public Map<String, List<CourseIdAndGradesView>> getAllGrades(long parentId) {
-        log.debug("Getting all child grades on parent " + parentId );
+        log.debug("Getting all child grades on parent " + parentId);
         ParentDTO parentDTO = this.get(parentId);
 
         List<StudentDTO> kids = converter.convertList(parentDTO.getKids(), StudentDTO.class);
