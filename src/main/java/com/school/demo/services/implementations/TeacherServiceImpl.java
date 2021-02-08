@@ -58,10 +58,9 @@ public class TeacherServiceImpl implements TeacherService {
         Role role = Role.TEACHER;
         validateModel(model, role);
 
-        TeacherDTO teacherDTO = new TeacherDTO();
+        TeacherDTO teacherDTO = this.get(id);
 
         populateTeacherDTO(model, teacherDTO);
-        teacherDTO.setId(id);
 
         Teacher entity = converter.convert(teacherDTO, Teacher.class);
         return converter.convert(repository.save(entity), TeacherDTO.class);

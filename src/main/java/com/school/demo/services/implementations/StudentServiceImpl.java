@@ -57,13 +57,10 @@ public class StudentServiceImpl implements StudentService {
         Role role = Role.STUDENT;
         validateModel(model, role);
 
-        StudentDTO studentDTO = populateStudentDTO(model);
-        studentDTO.setId(id);
-        studentDTO.setRole(role);
+        StudentDTO studentDTO = populateStudentDTO(this.get(id),model);
 
         Student entity = converter.convert(studentDTO, Student.class);
         return converter.convert(repository.save(entity), StudentDTO.class);
-
     }
 
     @Override
@@ -140,8 +137,7 @@ public class StudentServiceImpl implements StudentService {
         validator.validatePassword(model.getPassword());
     }
 
-    private StudentDTO populateStudentDTO(CreatePersonModel model) {
-        StudentDTO studentDTO = new StudentDTO();
+    private StudentDTO populateStudentDTO(StudentDTO studentDTO,CreatePersonModel model) {
 
         studentDTO.setFirstName(model.getFirstName());
         studentDTO.setLastName(model.getLastName());

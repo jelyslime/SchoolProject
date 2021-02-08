@@ -46,7 +46,7 @@ public class SchoolServiceImpl implements SchoolService {
     public SchoolDTO create(CreateSchoolModel model) {
         validateModel(model);
 
-        SchoolDTO school = populateSchool(model);
+        SchoolDTO school = populateSchool(new SchoolDTO(),model);
 
         repository.save(converter.convert(school, School.class));
         return school;
@@ -231,8 +231,7 @@ public class SchoolServiceImpl implements SchoolService {
                 .collect(Collectors.toList());
     }
 
-    private SchoolDTO populateSchool(CreateSchoolModel model) {
-        SchoolDTO school = new SchoolDTO();
+    private SchoolDTO populateSchool(SchoolDTO school,CreateSchoolModel model) {
 
         school.setAddress(model.getAddress());
         school.setDirector(null);

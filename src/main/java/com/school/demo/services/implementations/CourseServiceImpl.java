@@ -38,7 +38,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO create(CreateCourseModel model) {
-        CourseDTO course = populateCourse(model);
+        CourseDTO course = populateCourse(new CourseDTO(),model);
 
         Course entity = converter.convert(course, Course.class);
         entity = courseRepository.save(entity);
@@ -130,8 +130,8 @@ public class CourseServiceImpl implements CourseService {
         return this.removeStudent(courseId, studentService.get(studentId));
     }
 
-    private CourseDTO populateCourse(CreateCourseModel model) {
-        CourseDTO course = new CourseDTO();
+    private CourseDTO populateCourse(CourseDTO course,CreateCourseModel model) {
+
         course.setGrades(new HashSet<>());
         course.setStudents(new HashSet<>());
         course.setTeacher(converter.convert(service.get(model.getTeacherId()), Teacher.class));

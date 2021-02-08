@@ -59,10 +59,9 @@ public class DirectorServiceImpl implements DirectorService {
         Role role = Role.DIRECTOR;
         validateModel(model, role);
 
-        DirectorDTO director = new DirectorDTO();
+        DirectorDTO director = get(id);
 
         populateDirector(model, role, director);
-        director.setId(id);
 
         directorRepository.save(converter.convert(director, Director.class));
         return director;
