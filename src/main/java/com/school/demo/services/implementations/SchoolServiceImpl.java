@@ -108,7 +108,7 @@ public class SchoolServiceImpl implements SchoolService {
         studentDTO.setSchool(converter.convert(school, School.class));
 
         school.getStudents().add(converter.convert(studentDTO, Student.class));
-        repository.save(converter.convert(school, School.class));
+        repository.saveAndFlush(converter.convert(school, School.class));
         return true;
     }
 
@@ -193,7 +193,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public Map<String, Double> avgGradeOnStudents(long schoolId) {
-        SchoolDTO school = converter.convert(repository.findById(schoolId).orElse(new School()), SchoolDTO.class);
+        SchoolDTO school = this.get(schoolId);
 
         List<StudentDTO> students = converter.convertList(school.getStudents(), StudentDTO.class);
 

@@ -42,7 +42,7 @@ public class SchoolController {
     }
 
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<Void> deleteSchool(@PathVariable long id, @RequestBody CreateSchoolModel model) {
+    public ResponseEntity<Void> deleteSchool(@PathVariable long id) {
         boolean result = service.delete(id);
         if (result) {
             return ResponseEntity.ok().build();
@@ -108,17 +108,17 @@ public class SchoolController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{id}/students/average_grade")
+    @GetMapping("/{id}/students/average/grade")
     public Map<String, Double> avgGradeOnStudent(@PathVariable("id") long id) {
         return service.avgGradeOnStudents(id);
     }
 
-    @GetMapping("/{id}/students/average_grade/more_then_4.5")
+    @GetMapping("/{id}/students/average/grade/more_then_4.5")
     public Map<String, Double> avgGradeOnStudentsWhoHaveMoreThenFourPointFive(@PathVariable("id") long id) {
         return service.avgGradeOnStudentsWhoHaveMoreThenFourPointFive(id);
     }
 
-    @GetMapping("/{id}/students/average_grade/less_then_4.5")
+    @GetMapping("/{id}/students/average/grade/less_then_4.5")
     public Map<String, Double> avgGradeOnStudentsWhoHaveLessThenFourPointFive(@PathVariable("id") long id) {
         return service.avgGradeOnStudentsWhoHaveLessThenFourPointFive(id);
     }

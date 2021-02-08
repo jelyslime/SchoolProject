@@ -4,6 +4,7 @@ import com.school.demo.converter.GenericConverter;
 import com.school.demo.models.CreatePersonModel;
 import com.school.demo.services.implementations.TeacherServiceImpl;
 import com.school.demo.views.GradeAsValueView;
+import com.school.demo.views.GradeView;
 import com.school.demo.views.PersonNamesView;
 import com.school.demo.views.StudentView;
 import com.school.demo.views.TeacherView;
@@ -64,30 +65,29 @@ public class TeacherController {
     }
 
     @PostMapping("/{id}/course/{course_id}/add/grade/{grade}/student/{student_id}")
-    ResponseEntity<Void> addGrade(@PathVariable("id") long id, @PathVariable("course_id") long course_id,
-                                  @PathVariable("grade") double grade, @PathVariable("student_id") long student_id) {
+    ResponseEntity<GradeView> addGrade(@PathVariable("id") long id, @PathVariable("course_id") long course_id,
+                                       @PathVariable("grade") double grade, @PathVariable("student_id") long student_id) {
 
 
-        service.addGrade(id, course_id, grade, student_id);
+        GradeView view = converter.convert(service.addGrade(id, course_id, grade, student_id),GradeView.class);
 
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(view);
     }
 
     @PutMapping("/{id}/course/{course_id}/edit/grade/{grade_id}/value/{grade}")
-    ResponseEntity<Void> updateGrade(@PathVariable("id") long id, @PathVariable("course_id") long course_id,
+    ResponseEntity<GradeView> updateGrade(@PathVariable("id") long id, @PathVariable("course_id") long course_id,
                                      @PathVariable("grade_id") long grade_id, @PathVariable("grade") double grade) {
 
 
-        service.updateGrade(id, course_id, grade_id, grade);
+        GradeView view = converter.convert(service.updateGrade(id, course_id, grade_id, grade),GradeView.class);
 
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(view);
     }
 
     @DeleteMapping("/{id}/course/{course_id}/delete/grade/{gradeId}")
     ResponseEntity<Void> deleteGrade(@PathVariable("id") long id, @PathVariable("course_id") long course_id,
-                                     @PathVariable("grade_id") long grade_id) {
+                                     @PathVariable("gradeId") long grade_id) {
 
         service.deleteGrade(id, course_id, grade_id);
 

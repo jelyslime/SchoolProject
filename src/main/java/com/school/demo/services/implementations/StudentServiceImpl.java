@@ -121,7 +121,7 @@ public class StudentServiceImpl implements StudentService {
 
         studentDTO.setCourses(new HashSet<>());
         studentDTO.setGrades(new HashSet<>());
-        studentDTO.setSchool(new School());
+        studentDTO.setSchool(null);
         studentDTO.setParents(new HashSet<>());
 
         studentDTO.setFirstName(model.getFirstName());
